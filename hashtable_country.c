@@ -97,12 +97,14 @@ void hash_country_delete(HashtableCountry* ht, char* countryName) {
 }
 
 HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int * len) {
-    int i;
+    
+    int i, j;
+    HashtableCountryNode* temp;
 
     *len = 0;
 
     for (i = 0; i < ht->hash_nodes; i++) {
-        HashtableCountryNode* temp = ht->nodes[i];
+        temp = ht->nodes[i];
 
         while (temp != NULL) {
             (*len)++;
@@ -113,10 +115,10 @@ HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int * len) {
 
     HashtableCountryNode** table = malloc(sizeof (HashtableCountryNode*)*(*len));
 
-    int counter =0 ;
+    int counter = 0;
 
     for (i = 0; i < ht->hash_nodes; i++) {
-        HashtableCountryNode* temp = ht->nodes[i];
+        temp = ht->nodes[i];
 
         while (temp != NULL) {
             table[counter++] = temp;
@@ -125,7 +127,15 @@ HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int * len) {
         }
     }
     
-    // sort
+    // for (i = 0; i < ht->hash_nodes; i++) {				//sort array alphabetically
+    // 	for (j = i+1; j < ht->hash_nodes; j++) {
+    // 		if(strcmp(table[i]->countryName,table[j]->countryName)>0){
+    //         	temp = table[i];
+    //         	table[i] = table[j];
+    //         	table[j] = temp;
+    //        }
+    // 	}
+    // }
 
     return table;
 }
