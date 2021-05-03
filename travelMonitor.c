@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
         write(fd, buffer, bufferSize);
     }
 
-
+    sleep(1);
     while (1) { //commands from user
         size_t len = 0;
         printf("\nGive command: ");
