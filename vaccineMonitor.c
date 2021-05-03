@@ -33,7 +33,6 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     read_arguments_for_vaccine_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &id);
 
-
     char from_child_to_parent[1000];
     char from_parent_to_child[1000];
 
@@ -54,9 +53,7 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     printf("Child: <%d>: waiting for countries ... \n", id);
 
-
     char * buffer = malloc(bufferSize);
-
 
     HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
     HashtableCitizen* ht_citizens = hash_citizen_create(HASHTABLE_NODES); //create HashTable for citizens
@@ -71,7 +68,6 @@ int vaccine_monitor_main(int argc, char** argv) {
 
         printf("Child: <%d>: country received: %s ... \n", id, buffer);
 
-
         HashtableCountryNode* cc = hash_country_search(ht_countries, buffer);
         if (cc == NULL) {
             hash_country_insert(ht_countries, buffer);
@@ -80,24 +76,11 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     printf("Child: <%d>: building structures ... \n", id);
 
-
-
-
-    
-    
     printf("Child: <%d>: Exiting ... \n", id);
-
-
-
 
     free(buffer);
 
-
-
     return 0;
-
-
-
 
     int r;
     while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
