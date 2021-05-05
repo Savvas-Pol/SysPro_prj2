@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -59,18 +61,12 @@ DIR* read_arguments_for_travel_monitor(int argc, char** argv, int* bloomSize, in
 void read_arguments_for_vaccine_monitor(int argc, char** argv, int* bloomSize, int *bufferSize, int *numMonitors, int * id) {
     int i;
 
-    if (argc != 9) {
+    if (argc != 3) {
         printf("Wrong arguments!!!\n");
     } else {
-        for (i = 0; i < 9; i++) {
+        for (i = 0; i < 3; i++) {
             if (!strcmp(argv[i], "-i")) {
                 *id = atoi(argv[i + 1]);
-            } else if (!strcmp(argv[i], "-b")) {
-                *bufferSize = atoi(argv[i + 1]);
-            } else if (!strcmp(argv[i], "-s")) {
-                *bloomSize = atoi(argv[i + 1]);
-            } else if (!strcmp(argv[i], "-m")) {
-                *numMonitors = atoi(argv[i + 1]);
             }
         }
     }
@@ -158,4 +154,58 @@ void free_record(Record* temp) { //free
     if (temp->dateVaccinated != NULL) {
         free(temp->dateVaccinated);
     }
+}
+
+void send_info(int fd, char *info, int infolength, int bufferSize) {
+    write(fd, (char*) &infolength, sizeof (infolength));
+
+    int n = 0;
+
+    while (n < infolength) {
+        int m;
+
+        if (infolength - n >= bufferSize) {
+            m = write(fd, info, bufferSize);
+        } else {
+            m = write(fd, info, infolength - n);
+        }
+
+        n = n + m;
+        info = info + m;
+    }
+}
+
+int receive_info(int fd, char **pstart, int bufferSize) {
+    int infolength;
+    read(fd, (char*) &infolength, sizeof (infolength));
+
+    *pstart = malloc(infolength);
+
+    int n = 0;
+
+    char * info = *pstart;
+
+    while (n < infolength) {
+        int m;
+
+        if (infolength - n >= bufferSize) {
+            m = read(fd, info, bufferSize);
+        } else {
+            m = read(fd, info, infolength - n);
+        }
+
+        n = n + m;
+        info = info + m;
+    }
+
+    return infolength;
+}
+
+int receive_int(int fd, int buffersize) {
+    char * info1 = NULL;
+    int info_length1 = buffersize;
+    info_length1 = receive_info(fd, &info1, info_length1);
+    int result = *((int*) info1);
+    free(info1);
+    return result;
 }

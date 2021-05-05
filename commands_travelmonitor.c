@@ -14,23 +14,27 @@
 #include "help_functions.h"
 
 void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName) {
-	printf("Called travel_request with: %d, %s, %s, %s, %s, %s\n", bloomSize, citizenID, date, countryFrom, countryTo, virusName);
+    printf("Called travel_request with: %d, %s, %s, %s, %s, %s\n", bloomSize, citizenID, date, countryFrom, countryTo, virusName);
 }
 
 void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2) {
-	printf("Called travel_stats with: %d, %s, %s, %s\n", bloomSize, virusName, date1, date2);
+    printf("Called travel_stats with: %d, %s, %s, %s\n", bloomSize, virusName, date1, date2);
+    
+    // TODO
+    
+    
 }
 
 void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2, char* country) {
-	printf("Called travel_stats_country with: %d, %s, %s, %s, %s\n", bloomSize, virusName, date1, date2, country);
+    printf("Called travel_stats_country with: %d, %s, %s, %s, %s\n", bloomSize, virusName, date1, date2, country);
 }
 
 void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* country) {
-	printf("Called add_vaccination_records with: %d, %s\n", bloomSize, country);
+    printf("Called add_vaccination_records with: %d, %s\n", bloomSize, country);
 }
 
 void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* citizenID) {
-	printf("Called search_vaccination_status with: %d, %s\n", bloomSize, citizenID);
+    printf("Called search_vaccination_status with: %d, %s\n", bloomSize, citizenID);
 }
 
 //void insert_citizen_record(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens, HashtableCountry* ht_countries, int bloomSize, Record record, int flag) {

@@ -127,15 +127,15 @@ HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int * len) {
         }
     }
     
-    // for (i = 0; i < ht->hash_nodes; i++) {				//sort array alphabetically
-    // 	for (j = i+1; j < ht->hash_nodes; j++) {
-    // 		if(strcmp(table[i]->countryName,table[j]->countryName)>0){
-    //         	temp = table[i];
-    //         	table[i] = table[j];
-    //         	table[j] = temp;
-    //        }
-    // 	}
-    // }
+     for (i = 0; i < *len - 1; i++) {				//sort array alphabetically
+     	for (j = i+1; j < *len; j++) {
+     		if(strcmp(table[i]->countryName,table[j]->countryName)>0){
+             	temp = table[i];
+             	table[i] = table[j];
+             	table[j] = temp;
+            }
+     	}
+     }
 
     return table;
 }

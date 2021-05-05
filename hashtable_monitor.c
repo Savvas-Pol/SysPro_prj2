@@ -56,6 +56,12 @@ HashtableMonitorNode* hash_monitor_search(HashtableMonitor* ht, char* monitorNam
     return temp;
 }
 
+HashtableMonitorNode* hash_monitor_search_with_int(HashtableMonitor* ht, int monitorName) {
+    char key[100];
+    sprintf(key, "%d",monitorName );
+    return hash_monitor_search(ht, key);
+}
+
 HashtableMonitorNode* hash_monitor_insert(HashtableMonitor* ht, char* monitorName) {
 
     int pos = hash_function((unsigned char*) monitorName, ht->hash_nodes);

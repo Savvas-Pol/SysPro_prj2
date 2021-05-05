@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <signal.h>
 #include <fcntl.h>
 
 #include "help_functions.h"
@@ -15,6 +16,15 @@
 #include "constants.h"
 
 // "${OUTPUT_PATH}" -m 4 -b 2000 -s 1000 -i id
+
+int writelog = 0;
+
+void catchinterrupt2(int signo) {
+    printf("\nCatching: signo=%d\n", signo);
+    printf("Catching: returning\n");
+    
+    writelog = 1;
+}
 
 int vaccine_monitor_main(int argc, char** argv) {
     srand(time(0));
@@ -31,10 +41,19 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     /*      ---------------     */
 
+    static struct sigaction act;
+
     read_arguments_for_vaccine_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &id);
 
     char from_child_to_parent[1000];
     char from_parent_to_child[1000];
+
+    act.sa_handler = catchinterrupt2;
+    sigfillset(&(act.sa_mask));
+
+    sigaction(SIGINT, &act, NULL);
+    sigaction(SIGQUIT, &act, NULL);
+
 
     sprintf(from_child_to_parent, "from_child_to_parent_%d.fifo", id);
     sprintf(from_parent_to_child, "from_parent_to_child_%d.fifo", id);
@@ -51,16 +70,27 @@ int vaccine_monitor_main(int argc, char** argv) {
         perror("vaccineMonitor: can't open write fifo");
     }
 
-    printf("Child: <%d>: waiting for countries ... \n", id);
+    printf("Child: <%d>: waiting for bloom size and buffer size ... \n", id);
 
-    char * buffer = malloc(bufferSize);
+
+    bloomSize = receive_int(readfd, sizeof (int));
+    bufferSize = receive_int(readfd, sizeof (int));
+
+    printf("Child: <%d>: waiting for countries (bloom:%d, buffer:%d )... \n", id, bloomSize, bufferSize);
+
+
 
     HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
     HashtableCitizen* ht_citizens = hash_citizen_create(HASHTABLE_NODES); //create HashTable for citizens
     HashtableCountry* ht_countries = hash_country_create(HASHTABLE_NODES); //create HashTable for countries
 
     while (1) {
-        read(readfd, buffer, bufferSize);
+        char * info3 = NULL;
+        int info_length3;
+
+        info_length3 = receive_info(readfd, &info3, bufferSize);
+
+        char * buffer = info3;
 
         if (buffer[0] == '#') {
             break;
@@ -78,7 +108,16 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     printf("Child: <%d>: Exiting ... \n", id);
 
-    free(buffer);
+    // ...
+    // ...
+    // ...
+    // ...
+    // ...
+    // ...
+    // ...
+    // ...
+    // ...
+    // ...
 
     return 0;
 
@@ -93,8 +132,20 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     while (1) { //commands from user
         printf("\nGive command: ");
+        
+        if (writelog == 1) {
+            writelog = 0;
+            // writelog
+        }
+
+        // read from pipe instead of stdin
         getline(&line, &len, stdin);
         token = strtok(line, " \n");
+        
+        if (writelog == 1) {
+            writelog = 0;
+            // writelog
+        }
 
         if (token != NULL) {
 

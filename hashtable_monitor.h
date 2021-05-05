@@ -23,6 +23,7 @@ typedef struct HashtableMonitor {
 HashtableMonitor* hash_monitor_create(int hashNodes);
 void hash_monitor_destroy(HashtableMonitor* ht);
 HashtableMonitorNode* hash_monitor_search(HashtableMonitor* ht, char* monitorName);
+HashtableMonitorNode* hash_monitor_search_with_int(HashtableMonitor* ht, int monitorName);
 HashtableMonitorNode* hash_monitor_insert(HashtableMonitor* ht, char* monitorName);
 void hash_monitor_delete(HashtableMonitor* ht, char* monitorName);
 
