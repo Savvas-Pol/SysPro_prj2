@@ -54,7 +54,6 @@ int vaccine_monitor_main(int argc, char** argv) {
     sigaction(SIGINT, &act, NULL);
     sigaction(SIGQUIT, &act, NULL);
 
-
     sprintf(from_child_to_parent, "from_child_to_parent_%d.fifo", id);
     sprintf(from_parent_to_child, "from_parent_to_child_%d.fifo", id);
 
@@ -72,13 +71,10 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     printf("Child: <%d>: waiting for bloom size and buffer size ... \n", id);
 
-
     bloomSize = receive_int(readfd, sizeof (int));
     bufferSize = receive_int(readfd, sizeof (int));
 
     printf("Child: <%d>: waiting for countries (bloom:%d, buffer:%d )... \n", id, bloomSize, bufferSize);
-
-
 
     HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
     HashtableCitizen* ht_citizens = hash_citizen_create(HASHTABLE_NODES); //create HashTable for citizens
@@ -234,7 +230,6 @@ int vaccine_monitor_main(int argc, char** argv) {
                 tokens[6] = strtok(NULL, " \n"); //YES/NO
                 tokens[7] = strtok(NULL, " \n"); //date
                 tokens[8] = strtok(NULL, " \n"); //NULL
-
 
                 if (tokens[0] == NULL || tokens[8] != NULL) {
                     printf("syntax error\n");

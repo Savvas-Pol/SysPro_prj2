@@ -151,7 +151,6 @@ int main(int argc, char** argv) {
 
     printf("----------------------------------\n");
 
-
     for (j = 0; j < tablelen; j++) {
         char * country = table[j]->countryName;
         table[j]->who = j % numMonitors;
@@ -170,7 +169,6 @@ int main(int argc, char** argv) {
 
         send_info(fd, info1, info_length1, bufferSize);
     }
-
 
     for (j = 0; j < numMonitors; j++) {
         char name[100];
@@ -282,7 +280,6 @@ int main(int argc, char** argv) {
         unlink(node->from_child_to_parent);
         unlink(node->from_parent_to_child);
     }
-
 
     hash_virus_destroy(ht_viruses);
     hash_country_destroy(ht_countries);

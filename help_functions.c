@@ -157,7 +157,9 @@ void free_record(Record* temp) { //free
 }
 
 void send_info(int fd, char *info, int infolength, int bufferSize) {
-    write(fd, (char*) &infolength, sizeof (infolength));
+    //write(fd, (char*) &infolength, sizeof (infolength));
+    if (write(fd, (char*) &infolength, sizeof (infolength)) == -1)
+        perror("Error in write!!!\n");
 
     int n = 0;
 
@@ -166,8 +168,12 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
 
         if (infolength - n >= bufferSize) {
             m = write(fd, info, bufferSize);
+            if (m == -1)
+                perror("Error in write!!!\n");
         } else {
             m = write(fd, info, infolength - n);
+            if (m == -1)
+                perror("Error in write!!!\n");
         }
 
         n = n + m;
@@ -177,8 +183,9 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
 
 int receive_info(int fd, char **pstart, int bufferSize) {
     int infolength;
-    read(fd, (char*) &infolength, sizeof (infolength));
-
+    //read(fd, (char*) &infolength, sizeof (infolength));
+    if (read(fd, (char*) &infolength, sizeof (infolength)) == -1)
+        perror("Error in read!!!\n");
     *pstart = malloc(infolength);
 
     int n = 0;
@@ -190,8 +197,12 @@ int receive_info(int fd, char **pstart, int bufferSize) {
 
         if (infolength - n >= bufferSize) {
             m = read(fd, info, bufferSize);
+            if (m == -1)
+                perror("Error in read!!!\n");
         } else {
             m = read(fd, info, infolength - n);
+            if (m == -1)
+                perror("Error in read!!!\n");
         }
 
         n = n + m;
