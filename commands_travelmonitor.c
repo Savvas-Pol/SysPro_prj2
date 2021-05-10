@@ -14,28 +14,129 @@
 #include "help_functions.h"
 
 void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName) {
-    printf("Called travel_request with: %d, %s, %s, %s, %s, %s\n", bloomSize, citizenID, date, countryFrom, countryTo, virusName);
+    printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
 }
 
 void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2) {
-    printf("Called travel_stats with: %d, %s, %s, %s\n", bloomSize, virusName, date1, date2);
-    
-    // TODO
-    
+    //printf("Called travel_stats with: %s, %s, %s\n", virusName, date1, date2);
+
+    HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
+    HashtableCountryNode* temp;
+    int totalRequests = 0, totalAccepted = 0, totalRejected = 0, i, j;
+
+    Date* date_from = calloc(1, sizeof (Date));
+    Date* date_to = calloc(1, sizeof (Date));
+
+    char tempdate1[11]; //max possible digits of a date
+    char tempdate2[11];
+
+    strcpy(tempdate1, date1);
+    char* token = strtok(tempdate1, "-");
+    j = 0;
+    while (token != NULL) {
+        if (j == 0)
+            date_from->day = atoi(token);
+        else if (j == 1)
+            date_from->month = atoi(token);
+        else if (j == 2)
+            date_from->year = atoi(token);
+        token = strtok(NULL, "-\n");
+        j++;
+    }
+
+    strcpy(tempdate2, date2);
+    token = strtok(tempdate2, "-");
+    j = 0;
+    while (token != NULL) {
+        if (j == 0)
+            date_to->day = atoi(token);
+        else if (j == 1)
+            date_to->month = atoi(token);
+        else if (j == 2)
+            date_to->year = atoi(token);
+        token = strtok(NULL, "-\n");
+        j++;
+    }
+
+    if (virusNode != NULL) {
+    	for (i = 0; i < HASHTABLE_NODES; i++) {
+    		temp = ht_countries->nodes[i];
+    		while (temp != NULL) {
+                //calculate
+                temp = temp->next;
+            }
+    	}
+    }
+
+    printf("TOTAL REQUESTS %d\n", totalRequests);
+    printf("ACCEPTED %d\n", totalAccepted);
+    printf("REJECTED %d\n", totalRejected);
     
 }
 
 void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2, char* country) {
-    printf("Called travel_stats_country with: %d, %s, %s, %s, %s\n", bloomSize, virusName, date1, date2, country);
+    //printf("Called travel_stats_country with: %s, %s, %s, %s\n", virusName, date1, date2, country);
+
+    HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
+    HashtableCountryNode* countryNode = hash_country_search(ht_countries, country);
+    int totalRequests = 0, totalAccepted = 0, totalRejected = 0, i, j;
+
+    Date* date_from = calloc(1, sizeof (Date));
+    Date* date_to = calloc(1, sizeof (Date));
+
+    char tempdate1[11]; //max possible digits of a date
+    char tempdate2[11];
+
+    strcpy(tempdate1, date1);
+    char* token = strtok(tempdate1, "-");
+    j = 0;
+    while (token != NULL) {
+        if (j == 0)
+            date_from->day = atoi(token);
+        else if (j == 1)
+            date_from->month = atoi(token);
+        else if (j == 2)
+            date_from->year = atoi(token);
+        token = strtok(NULL, "-\n");
+        j++;
+    }
+
+    strcpy(tempdate2, date2);
+    token = strtok(tempdate2, "-");
+    j = 0;
+    while (token != NULL) {
+        if (j == 0)
+            date_to->day = atoi(token);
+        else if (j == 1)
+            date_to->month = atoi(token);
+        else if (j == 2)
+            date_to->year = atoi(token);
+        token = strtok(NULL, "-\n");
+        j++;
+    }
+
+ //    if (countryNode != NULL) {
+	//     if (virusNode != NULL) {
+	    	
+
+	//     }
+	// }
+
+    printf("TOTAL REQUESTS %d\n", totalRequests);
+    printf("ACCEPTED %d\n", totalAccepted);
+    printf("REJECTED %d\n", totalRejected);
 }
 
 void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* country) {
-    printf("Called add_vaccination_records with: %d, %s\n", bloomSize, country);
+    printf("Called add_vaccination_records with: %s\n", country);
 }
 
 void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* citizenID) {
-    printf("Called search_vaccination_status with: %d, %s\n", bloomSize, citizenID);
+    printf("Called search_vaccination_status with: %s\n", citizenID);
 }
+
+
+
 
 //void insert_citizen_record(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens, HashtableCountry* ht_countries, int bloomSize, Record record, int flag) {
 //
