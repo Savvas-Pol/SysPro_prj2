@@ -37,13 +37,16 @@ int main(int argc, char** argv) {
 
     /*  ---     DECLARATIONS    --- */
 
-    int bloomSize, bufferSize, numMonitors, j;
+    int bloomSize, bufferSize, numMonitors, i, j;
+    int totalRequests = 0, totalAccepted = 0, totalRejected = 0;
     char* token;
 
     char* line = NULL;
 
     DIR* inputDirectory;
     struct dirent *direntp;
+
+    FILE* logfile;
 
     /*      ---------------     */
 
@@ -258,6 +261,25 @@ int main(int argc, char** argv) {
             }
         }
     }
+
+    char logfile_name[100];
+    sprintf(logfile_name, "log_file.%d", getpid());
+    logfile = fopen(logfile_name, "w");
+    if (logfile == NULL) {   
+        printf("Error! Could not open file\n"); 
+        exit(-1);
+    }
+    HashtableCountryNode* temp;
+    for (i = 0; i < HASHTABLE_NODES; i++) {
+            temp = ht_countries->nodes[i];
+            while (temp != NULL) {
+                fprintf(logfile, "%s\n", temp->countryName);
+                temp = temp->next;
+            }
+        }
+    fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalRequests);
+    fprintf(logfile, "ACCEPTED %d\n", totalAccepted);
+    fprintf(logfile, "REJECTED %d\n", totalRejected);
 
     // frees
     for (j = 0; j < numMonitors; j++) {

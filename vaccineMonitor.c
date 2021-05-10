@@ -5,6 +5,7 @@
 #include <time.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include "help_functions.h"
 #include "hashtable_virus.h"
@@ -38,15 +39,17 @@ int vaccine_monitor_main(int argc, char** argv) {
     size_t len = 0;
 
     FILE* citizenRecordsFile;
-
-    /*      ---------------     */
-
-    static struct sigaction act;
-
-    read_arguments_for_vaccine_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &id);
+    DIR* inputDirectory;
+    struct dirent *direntp;
 
     char from_child_to_parent[1000];
     char from_parent_to_child[1000];
+
+    static struct sigaction act;
+
+    /*      ---------------     */
+
+    read_arguments_for_vaccine_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &id);
 
     act.sa_handler = catchinterrupt2;
     sigfillset(&(act.sa_mask));
@@ -104,16 +107,22 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     printf("Child: <%d>: Exiting ... \n", id);
 
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
+    // if (!(inputDirectory = opendir(argv[2]))) {
+    //     printf("Error in opening %s\n", argv[2]);
+    //     return -1;
+    // }
+    // while ((direntp = readdir(inputDirectory)) != NULL) {
+    //     if (direntp->d_name[0] != '.') {
+    //         printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
+
+    //         HashtableCountryNode* cc = hash_country_search(ht_countries, direntp->d_name);
+    //         if (cc == NULL) {
+    //             hash_country_insert(ht_countries, direntp->d_name);
+    //         }
+    //     }
+    // }
+
+    //closedir(inputDirectory);
 
     return 0;
 
