@@ -213,6 +213,7 @@ int main(int argc, char** argv) {
                     printf("syntax error\n");
                 } else {
                     travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]);
+                    totalRequests++;
                 }
             } else if (!strcmp(token, "/pid") || !strcmp(token, "pid")) {
                 printf("Parent pid is %d \n", getpid());
