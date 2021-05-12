@@ -29,8 +29,8 @@ int vaccine_monitor_main(int argc, char** argv);
 void catchinterrupt(int signo) {
     printf("\nCatching: signo=%d\n", signo);
     printf("Catching: returning\n");
-    
-    quit =1 ;
+
+    quit = 1;
 }
 
 int main(int argc, char** argv) {
@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
     int bloomSize, bufferSize, numMonitors, i, j;
     int totalRequests = 0, totalAccepted = 0, totalRejected = 0;
     char* token;
+    char *inputDirectroyPath = NULL;
 
     char* line = NULL;
 
@@ -52,7 +53,7 @@ int main(int argc, char** argv) {
 
     static struct sigaction act;
 
-    if ((inputDirectory = read_arguments_for_travel_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors)) == NULL) { //read arguments from command line
+    if ((inputDirectory = read_arguments_for_travel_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &inputDirectroyPath)) == NULL) { //read arguments from command line
         return -1;
     } else {
         act.sa_handler = catchinterrupt;
@@ -131,7 +132,12 @@ int main(int argc, char** argv) {
 
             send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2);
 
-            printf("info_length1=%d, info_length2=%d\n", info_length1, info_length2);
+            char * info3 = inputDirectroyPath;
+            int info_length3 = strlen(inputDirectroyPath) + 1;
+
+            send_info(node->fd_from_parent_to_child, info3, info_length3, info_length3);
+
+            printf("info_length1=%d, info_length2=%d, info_length3=%d\n", info_length1, info_length2, info_length3);
         } else if (pid == 0) {
             argc = 3;
             argv = malloc(sizeof (char*)*4);
@@ -189,6 +195,63 @@ int main(int argc, char** argv) {
 
         send_info(fd, info1, info_length1, bufferSize);
     }
+
+    printf("----------------------------------\n");
+
+    for (j = 0; j < numMonitors; j++) {
+        char name[100];
+        sprintf(name, "%d", j);
+        HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+
+        int fd = node->fd_from_child_to_parent;
+
+
+        while (1) {
+            char * info3 = NULL;
+            receive_info(fd, &info3, bufferSize);
+
+            char * buffer = info3;
+
+            if (buffer[0] == '#') {
+                free(buffer);
+                break;
+            }
+
+            char * virusName = info3;
+
+            HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName); //search if virus exists
+            if (virusNode == NULL) {
+                virusNode = hash_virus_insert(ht_viruses, virusName);
+                virusNode->bloom = bloom_init(bloomSize);
+                virusNode->vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
+                virusNode->not_vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
+            }
+
+            char * bloomVector = NULL;
+            receive_info(fd, &bloomVector, bloomSize);
+            
+            for (int k=0;k<bloomSize;k++) {
+                virusNode->bloom->vector[k] |= bloomVector[k];
+            }
+
+            free(bloomVector);            
+            free(buffer);            
+        }
+    }
+
+
+    int vtablelen;
+
+    HashtableVirusNode** vtable = hash_virus_to_array(ht_viruses, &vtablelen);
+
+
+    for (j = 0; j < vtablelen; j++) {
+        char * virusName = vtable[j]->virusName;
+
+        printf("Parent Virus slot [%d]: %s \n", j + 1, virusName);
+    }
+
+
 
     while (quit != 1) { //commands from user
         size_t len = 0;
@@ -266,18 +329,18 @@ int main(int argc, char** argv) {
     char logfile_name[100];
     sprintf(logfile_name, "log_file.%d", getpid());
     logfile = fopen(logfile_name, "w");
-    if (logfile == NULL) {   
-        printf("Error! Could not open file\n"); 
+    if (logfile == NULL) {
+        printf("Error! Could not open file\n");
         exit(-1);
     }
     HashtableCountryNode* temp;
     for (i = 0; i < HASHTABLE_NODES; i++) {
-            temp = ht_countries->nodes[i];
-            while (temp != NULL) {
-                fprintf(logfile, "%s\n", temp->countryName);
-                temp = temp->next;
-            }
+        temp = ht_countries->nodes[i];
+        while (temp != NULL) {
+            fprintf(logfile, "%s\n", temp->countryName);
+            temp = temp->next;
         }
+    }
     fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalRequests);
     fprintf(logfile, "ACCEPTED %d\n", totalAccepted);
     fprintf(logfile, "REJECTED %d\n", totalRejected);
@@ -307,6 +370,9 @@ int main(int argc, char** argv) {
     hash_virus_destroy(ht_viruses);
     hash_country_destroy(ht_countries);
     hash_monitor_destroy(ht_monitors);
+
+    free(table);
+    free(vtable);
 
     return 0;
 }

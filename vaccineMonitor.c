@@ -23,7 +23,7 @@ int writelog = 0;
 void catchinterrupt2(int signo) {
     printf("\nCatching: signo=%d\n", signo);
     printf("Catching: returning\n");
-    
+
     writelog = 1;
 }
 
@@ -32,14 +32,15 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     /*  ---     DECLARATIONS    --- */
 
-    int bloomSize, bufferSize, numMonitors, j, id;
+    int bloomSize = -1, bufferSize = -1, numMonitors = -1, j, id;
     char* token;
+    char *inputDirectoryPath = NULL;
 
     char* line = NULL;
     size_t len = 0;
 
     FILE* citizenRecordsFile;
-    DIR* inputDirectory;
+    DIR* inputDirectory = NULL;
     struct dirent *direntp;
 
     char from_child_to_parent[1000];
@@ -76,8 +77,9 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     bloomSize = receive_int(readfd, sizeof (int));
     bufferSize = receive_int(readfd, sizeof (int));
+    receive_info(readfd, &inputDirectoryPath, bufferSize);
 
-    printf("Child: <%d>: waiting for countries (bloom:%d, buffer:%d )... \n", id, bloomSize, bufferSize);
+    printf("Child: <%d>: waiting for countries (bloom:%d, buffer:%d, dir:%s )... \n", id, bloomSize, bufferSize, inputDirectoryPath);
 
     HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
     HashtableCitizen* ht_citizens = hash_citizen_create(HASHTABLE_NODES); //create HashTable for citizens
@@ -85,9 +87,7 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     while (1) {
         char * info3 = NULL;
-        int info_length3;
-
-        info_length3 = receive_info(readfd, &info3, bufferSize);
+        receive_info(readfd, &info3, bufferSize);
 
         char * buffer = info3;
 
@@ -101,42 +101,83 @@ int vaccine_monitor_main(int argc, char** argv) {
         if (cc == NULL) {
             hash_country_insert(ht_countries, buffer);
         }
+
+        char * buffer4 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1);
+        strcpy(buffer4, inputDirectoryPath);
+        strcat(buffer4, "/");
+        strcat(buffer4, buffer);
+
+
+        if (!(inputDirectory = opendir(buffer4))) {
+            printf("Error in opening %s\n", buffer4);
+        } else {
+            while ((direntp = readdir(inputDirectory)) != NULL) {
+                if (direntp->d_name[0] != '.') {
+                    printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
+
+                    char * buffer5 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1 + strlen(direntp->d_name) + 1);
+                    strcpy(buffer5, inputDirectoryPath);
+                    strcat(buffer5, "/");
+                    strcat(buffer5, buffer);
+                    strcat(buffer5, "/");
+                    strcat(buffer5, direntp->d_name);
+
+                    FILE * citizenRecordsFile = fopen(buffer5, "r");
+
+
+                    int r;
+                    while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
+                        Record record;
+
+                        fill_record(line, &record); //create a temp record
+                        insert_citizen_record(ht_viruses, ht_citizens, ht_countries, bloomSize, record, 1); //flag=1 means from file
+                        free_record(&record); //free temp record
+                    }
+
+                    fclose(citizenRecordsFile);
+                    free(buffer5);
+                }
+            }
+        }
+
+        free(buffer4);
+
     }
 
     printf("Child: <%d>: building structures ... \n", id);
 
-    printf("Child: <%d>: Exiting ... \n", id);
+    int tablelen;
 
-    // if (!(inputDirectory = opendir(argv[2]))) {
-    //     printf("Error in opening %s\n", argv[2]);
-    //     return -1;
-    // }
-    // while ((direntp = readdir(inputDirectory)) != NULL) {
-    //     if (direntp->d_name[0] != '.') {
-    //         printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
+    HashtableVirusNode** table = hash_virus_to_array(ht_viruses, &tablelen);
 
-    //         HashtableCountryNode* cc = hash_country_search(ht_countries, direntp->d_name);
-    //         if (cc == NULL) {
-    //             hash_country_insert(ht_countries, direntp->d_name);
-    //         }
-    //     }
-    // }
+    for (j = 0; j < tablelen; j++) {
+        char * virus = table[j]->virusName;
+
+        printf("Sending disease :%s to parent through pipe: %s via fd: %d \n", virus, from_child_to_parent, writefd);
+
+        char * info1 = (char *) virus;
+        int info_length1 = strlen(virus) + 1;
+
+        send_info(writefd, info1, info_length1, bufferSize);
+        
+        
+        char * info2 = table[j]->bloom->vector;
+        int info_length2 = bloomSize;
+
+        send_info(writefd, info2, info_length2, bufferSize);
+    }
+
+    char buffer[2] = "#";
+    char * info1 = (char *) buffer;
+    int info_length1 = strlen(buffer) + 1;
+    send_info(writefd, info1, info_length1, bufferSize);
+
+
 
     //closedir(inputDirectory);
 
-    return 0;
-
-    int r;
-    while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
-        Record record;
-
-        fill_record(line, &record); //create a temp record
-        insert_citizen_record(ht_viruses, ht_citizens, ht_countries, bloomSize, record, 1); //flag=1 means from file
-        free_record(&record); //free temp record
-    }
-
-    while (1) { //commands from user
-        printf("\nGive command: ");
+    while (1) {
+        char * line = NULL;
         
         if (writelog == 1) {
             writelog = 0;
@@ -144,9 +185,9 @@ int vaccine_monitor_main(int argc, char** argv) {
         }
 
         // read from pipe instead of stdin
-        getline(&line, &len, stdin);
+        receive_info(readfd, &line, bufferSize);
         token = strtok(line, " \n");
-        
+
         if (writelog == 1) {
             writelog = 0;
             // writelog
@@ -154,7 +195,9 @@ int vaccine_monitor_main(int argc, char** argv) {
 
         if (token != NULL) {
 
-            if (!strcmp(token, "/vaccineStatusBloom")) {
+            if (!strcmp(token, "/travelRequest")) {
+                
+            } else if (!strcmp(token, "/vaccineStatusBloom")) {
                 char* tokens[3];
 
                 tokens[0] = strtok(NULL, " \n"); //citizenID
@@ -340,5 +383,7 @@ int vaccine_monitor_main(int argc, char** argv) {
     hash_citizen_destroy(ht_citizens);
     hash_country_destroy(ht_countries);
 
+     printf("Child: <%d>: Exiting ... \n", id);
+     
     return 0;
 }
