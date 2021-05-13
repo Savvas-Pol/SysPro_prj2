@@ -126,7 +126,6 @@ int main(int argc, char** argv) {
 
             send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1);
 
-
             char * info2 = (char *) &bufferSize;
             int info_length2 = sizeof (bufferSize);
 
@@ -205,7 +204,6 @@ int main(int argc, char** argv) {
 
         int fd = node->fd_from_child_to_parent;
 
-
         while (1) {
             char * info3 = NULL;
             receive_info(fd, &info3, bufferSize);
@@ -239,19 +237,15 @@ int main(int argc, char** argv) {
         }
     }
 
-
     int vtablelen;
 
     HashtableVirusNode** vtable = hash_virus_to_array(ht_viruses, &vtablelen);
-
 
     for (j = 0; j < vtablelen; j++) {
         char * virusName = vtable[j]->virusName;
 
         printf("Parent Virus slot [%d]: %s \n", j + 1, virusName);
     }
-
-
 
     while (quit != 1) { //commands from user
         size_t len = 0;
@@ -322,6 +316,8 @@ int main(int argc, char** argv) {
                 }
             } else if (!strcmp(token, "/exit") || !strcmp(token, "exit")) {
                 break;
+            } else {
+                printf("Invalid command!! Try again...\n");
             }
         }
     }

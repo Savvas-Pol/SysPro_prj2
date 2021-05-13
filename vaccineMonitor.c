@@ -107,7 +107,6 @@ int vaccine_monitor_main(int argc, char** argv) {
         strcat(buffer4, "/");
         strcat(buffer4, buffer);
 
-
         if (!(inputDirectory = opendir(buffer4))) {
             printf("Error in opening %s\n", buffer4);
         } else {
@@ -123,7 +122,6 @@ int vaccine_monitor_main(int argc, char** argv) {
                     strcat(buffer5, direntp->d_name);
 
                     FILE * citizenRecordsFile = fopen(buffer5, "r");
-
 
                     int r;
                     while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
@@ -160,7 +158,6 @@ int vaccine_monitor_main(int argc, char** argv) {
 
         send_info(writefd, info1, info_length1, bufferSize);
         
-        
         char * info2 = table[j]->bloom->vector;
         int info_length2 = bloomSize;
 
@@ -171,8 +168,6 @@ int vaccine_monitor_main(int argc, char** argv) {
     char * info1 = (char *) buffer;
     int info_length1 = strlen(buffer) + 1;
     send_info(writefd, info1, info_length1, bufferSize);
-
-
 
     //closedir(inputDirectory);
 
@@ -383,7 +378,7 @@ int vaccine_monitor_main(int argc, char** argv) {
     hash_citizen_destroy(ht_citizens);
     hash_country_destroy(ht_countries);
 
-     printf("Child: <%d>: Exiting ... \n", id);
+    printf("Child: <%d>: Exiting ... \n", id);
      
     return 0;
 }
