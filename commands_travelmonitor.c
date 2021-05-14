@@ -15,6 +15,13 @@
 
 void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName) {
     printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
+
+    char* command = malloc(strlen("./travelRequest") + sizeof(citizenID) + sizeof(date) + sizeof(countryFrom) + sizeof(countryTo) + sizeof(virusName) + 1);
+
+    sprintf(command, "./travelRequest %s %s %s %s %s", citizenID, date, countryFrom, countryTo, virusName);
+
+    printf("New command: %s\n", command);
+    free(command);
 }
 
 void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2) {
@@ -129,10 +136,24 @@ void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_count
 
 void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* country) {
     printf("Called add_vaccination_records with: %s\n", country);
+
+    char* command = malloc(strlen("./addVaccinationRecords") + sizeof(country) + 1);
+
+    sprintf(command, "./addVaccinationRecords %s", country);
+
+    printf("New command: %s\n", command);
+    free(command);
 }
 
 void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* citizenID) {
     printf("Called search_vaccination_status with: %s\n", citizenID);
+
+    char* command = malloc(strlen("./searchVaccinationStatus") + sizeof(citizenID) + 1);
+
+    sprintf(command, "./searchVaccinationStatus %s", citizenID);
+
+    printf("New command: %s\n", command);
+    free(command);
 }
 
 
