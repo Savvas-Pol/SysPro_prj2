@@ -16,11 +16,17 @@
 void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName) {
     printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
 
+    // HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
+    // char* name = malloc(sizeof(country->who) + 1);
+    // sprintf(name, "%d", country->who);
+    // HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+
     char* command = malloc(strlen("./travelRequest") + sizeof(citizenID) + sizeof(date) + sizeof(countryFrom) + sizeof(countryTo) + sizeof(virusName) + 1);
 
-    sprintf(command, "./travelRequest %s %s %s %s %s", citizenID, date, countryFrom, countryTo, virusName);
+    sprintf(command, "./travelRequest %s %s %s %s %s", citizenID, date, countryFrom, countryTo, virusName);	//reconstruct command
 
-    printf("New command: %s\n", command);
+    //printf("New command: %s\n", command);
+    //printf("Sending command :%s to worker %d through pipe: %s via fd: %d \n", command, country->who, node->from_parent_to_child, node->fd_from_parent_to_child);
     free(command);
 }
 
