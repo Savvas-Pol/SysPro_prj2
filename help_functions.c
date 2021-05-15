@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -41,7 +42,7 @@ DIR* read_arguments_for_travel_monitor(int argc, char** argv, int* bloomSize, in
         return NULL;
     } else {
         for (i = 0; i < 9; i++) {
-            if (!strcmp(argv[i], "-i")) {                
+            if (!strcmp(argv[i], "-i")) {
                 if (!(inputDirectory = opendir(argv[i + 1]))) {
                     printf("Error in opening %s\n", argv[i + 1]);
                     return NULL;
@@ -160,8 +161,14 @@ void free_record(Record* temp) { //free
 
 void send_info(int fd, char *info, int infolength, int bufferSize) {
     //write(fd, (char*) &infolength, sizeof (infolength));
-    if (write(fd, (char*) &infolength, sizeof (infolength)) == -1)
-        perror("Error in write!!!\n");
+    if (write(fd, (char*) &infolength, sizeof (infolength)) == -1) {
+        if (errno == EINTR) {
+            return;
+        } else {
+            perror("Error in write!!!\n");
+            exit(1);
+        }
+    }
 
     int n = 0;
 
@@ -186,8 +193,14 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
 int receive_info(int fd, char **pstart, int bufferSize) {
     int infolength;
     //read(fd, (char*) &infolength, sizeof (infolength));
-    if (read(fd, (char*) &infolength, sizeof (infolength)) == -1)
-        perror("Error in read!!!\n");
+    if (read(fd, (char*) &infolength, sizeof (infolength)) == -1) {
+        if (errno == EINTR) {
+            return 0;
+        } else {
+            perror("Error in read!!!\n");
+            exit(1);
+        }
+    }
     *pstart = malloc(infolength);
 
     int n = 0;

@@ -1,7 +1,7 @@
 all: travelMonitor
 
-travelMonitor: travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o BF.o date.o commands.o commands_travelmonitor.o citizen.o
-	gcc travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o BF.o date.o commands.o citizen.o commands_travelmonitor.o -o travelMonitor
+travelMonitor: travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o BF.o date.o commands_vaccinemonitor.o commands_travelmonitor.o citizen.o
+	gcc travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o BF.o date.o commands_vaccinemonitor.o citizen.o commands_travelmonitor.o -o travelMonitor
 
 travelMonitor.o: travelMonitor.c
 	gcc -c travelMonitor.c
@@ -33,8 +33,8 @@ BF.o: BF.c
 date.o: date.c
 	gcc -c date.c
 	
-commands.o: commands.c
-	gcc -c commands.c
+commands_vaccinemonitor.o: commands_vaccinemonitor.c
+	gcc -c commands_vaccinemonitor.c
 	
 commands_travelmonitor.o: commands_travelmonitor.c
 	gcc -c commands_travelmonitor.c
@@ -43,4 +43,4 @@ citizen.o: citizen.c
 	gcc -c citizen.c
 	
 clean:
-	rm -f travelMonitor travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o BF.o date.o commands.o commands_travelmonitor.o citizen.o
+	rm -f travelMonitor travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o BF.o date.o commands_vaccinemonitor.o commands_travelmonitor.o citizen.o

@@ -15,9 +15,6 @@ void free_record(Record* temp); //free
 DIR* read_arguments_for_travel_monitor(int argc, char** argv, int* bloomSize, int *bufferSize, int *numMonitors, char ** inputDir); //reads arguments from command line
 void read_arguments_for_vaccine_monitor(int argc, char** argv, int* bloomSize, int *bufferSize, int *numMonitors, int * id); //reads arguments from command line
 
-
-
-
 void send_info(int fd, char *info, int infolength, int bufferSize);
 
 int receive_info(int fd, char **info, int bufferSize);

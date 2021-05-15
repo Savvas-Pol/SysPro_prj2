@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include "commands_travelmonitor.h"
 #include "skiplist.h"
@@ -12,21 +13,62 @@
 #include "hashtable_country.h"
 #include "hashtable_monitor.h"
 #include "help_functions.h"
+#include "commands_vaccinemonitor.h"
 
-void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName) {
+void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName) {
     printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
 
-    // HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
-    // char* name = malloc(sizeof(country->who) + 1);
-    // sprintf(name, "%d", country->who);
-    // HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+    HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
 
-    char* command = malloc(strlen("./travelRequest") + sizeof(citizenID) + sizeof(date) + sizeof(countryFrom) + sizeof(countryTo) + sizeof(virusName) + 1);
+    if (country == NULL) {
+        printf("*****************\n");
+        printf("Country not found on parent\n");
+        printf("*****************\n");
+        return;
+    }
 
-    sprintf(command, "./travelRequest %s %s %s %s %s", citizenID, date, countryFrom, countryTo, virusName);	//reconstruct command
+    int q = vaccine_status_bloom(ht_viruses, citizenID, virusName);
 
-    //printf("New command: %s\n", command);
-    //printf("Sending command :%s to worker %d through pipe: %s via fd: %d \n", command, country->who, node->from_parent_to_child, node->fd_from_parent_to_child);
+    if (q == 0) {
+        printf("*****************\n");
+        printf("Citizen not vaccinated based on bloom filter of parent \n");
+        printf("*****************\n");
+        return;
+    }
+
+    if (q == 2) {
+        printf("*****************\n");
+        printf("Virus not found on parent\n");
+        printf("*****************\n");
+        return;
+    }
+
+
+    char name[10] = {0};
+    sprintf(name, "%d", country->who);
+
+    HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+
+    printf("Node for %s is %s \n", country->countryName, node->monitorName);
+
+
+    char* command = malloc(strlen("travelRequest") + strlen(citizenID) + strlen(date) + strlen(countryFrom) + strlen(countryTo) + strlen(virusName) + 6);
+    sprintf(command, "travelRequest %s %s %s %s %s", citizenID, date, countryFrom, countryTo, virusName); //reconstruct command
+
+    printf("Sending command :%s to worker %d through pipe: %s via fd: %d \n", command, country->who, node->from_parent_to_child, node->fd_from_parent_to_child);
+
+    char * info = command;
+    int info_length = strlen(command) + 1;
+
+    send_info(node->fd_from_parent_to_child, info, info_length, bufferSize);
+
+    // read from pipe instead of stdin
+    receive_info(node->fd_from_child_to_parent, &info, bufferSize);
+
+    printf("*****************\n");
+    printf("%s\n", info);
+    printf("*****************\n");
+
     free(command);
 }
 
@@ -72,27 +114,27 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
     }
 
     if (virusNode != NULL) {
-    	for (i = 0; i < HASHTABLE_NODES; i++) {
-    		temp = ht_countries->nodes[i];
-    		while (temp != NULL) {
+        for (i = 0; i < HASHTABLE_NODES; i++) {
+            temp = ht_countries->nodes[i];
+            while (temp != NULL) {
                 //calculate
                 temp = temp->next;
             }
-    	}
+        }
     }
 
     printf("TOTAL REQUESTS %d\n", totalRequests);
     printf("ACCEPTED %d\n", totalAccepted);
     printf("REJECTED %d\n", totalRejected);
-    
+
 }
 
 void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2, char* country) {
     //printf("Called travel_stats_country with: %s, %s, %s, %s\n", virusName, date1, date2, country);
 
-    HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
-    HashtableCountryNode* countryNode = hash_country_search(ht_countries, country);
-    int totalRequests = 0, totalAccepted = 0, totalRejected = 0, i, j;
+//    HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
+//    HashtableCountryNode* countryNode = hash_country_search(ht_countries, country);
+    int totalRequests = 0, totalAccepted = 0, totalRejected = 0, j;
 
     Date* date_from = calloc(1, sizeof (Date));
     Date* date_to = calloc(1, sizeof (Date));
@@ -128,33 +170,78 @@ void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_count
         j++;
     }
 
- //    if (countryNode != NULL) {
-	//     if (virusNode != NULL) {
-	    	
+    //    if (countryNode != NULL) {
+    //     if (virusNode != NULL) {
 
-	//     }
-	// }
+
+    //     }
+    // }
 
     printf("TOTAL REQUESTS %d\n", totalRequests);
     printf("ACCEPTED %d\n", totalAccepted);
     printf("REJECTED %d\n", totalRejected);
 }
 
-void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* country) {
-    printf("Called add_vaccination_records with: %s\n", country);
+void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char* countryName) {
+    printf("Called add_vaccination_records with: %s\n", countryName);
 
-    char* command = malloc(strlen("./addVaccinationRecords") + sizeof(country) + 1);
+    HashtableCountryNode* country = hash_country_search(ht_countries, countryName);
 
-    sprintf(command, "./addVaccinationRecords %s", country);
+    if (country == NULL) {
+        printf("*****************\n");
+        printf("Country not found on parent\n");
+        printf("*****************\n");
+        return;
+    }
 
-    printf("New command: %s\n", command);
-    free(command);
+    char name[10] = {0};
+    sprintf(name, "%d", country->who);
+
+    HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+
+    printf("Node for %s is %s \n", country->countryName, node->monitorName);
+
+    kill(node->pid, SIGUSR1);
+
+    int fd = node->fd_from_child_to_parent;
+
+    while (1) {
+        char * info3 = NULL;
+        receive_info(fd, &info3, bufferSize);
+
+        char * buffer = info3;
+
+        if (buffer[0] == '#') {
+            free(buffer);
+            break;
+        }
+
+        char * virusName = info3;
+
+        HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName); //search if virus exists
+        if (virusNode == NULL) {
+            virusNode = hash_virus_insert(ht_viruses, virusName);
+            virusNode->bloom = bloom_init(bloomSize);
+            virusNode->vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
+            virusNode->not_vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
+        }
+
+        char * bloomVector = NULL;
+        receive_info(fd, &bloomVector, bloomSize);
+
+        for (int k = 0; k < bloomSize; k++) {
+            virusNode->bloom->vector[k] |= bloomVector[k];
+        }
+
+        free(bloomVector);
+        free(buffer);
+    }
 }
 
 void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* citizenID) {
     printf("Called search_vaccination_status with: %s\n", citizenID);
 
-    char* command = malloc(strlen("./searchVaccinationStatus") + sizeof(citizenID) + 1);
+    char* command = malloc(strlen("./searchVaccinationStatus") + sizeof (citizenID) + 1);
 
     sprintf(command, "./searchVaccinationStatus %s", citizenID);
 

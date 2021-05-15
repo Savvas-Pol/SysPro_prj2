@@ -13,18 +13,53 @@
 #include "hashtable_country.h"
 #include "BF.h"
 #include "record.h"
-#include "commands.h"
+#include "commands_vaccinemonitor.h"
 #include "constants.h"
 
 // "${OUTPUT_PATH}" -m 4 -b 2000 -s 1000 -i id
 
 int writelog = 0;
+int add_records = 0;
 
 void catchinterrupt2(int signo) {
     printf("\nCatching: signo=%d\n", signo);
     printf("Catching: returning\n");
 
     writelog = 1;
+}
+
+void catchinterrupt_act_add_records(int signo) {
+    printf("\nCatching: signo=%d\n", signo);
+    printf("Catching: returning\n");
+
+    add_records = 1;
+}
+
+void execute_add_records(HashtableVirusNode** table, int tablelen, int bloomSize, char * from_child_to_parent, int bufferSize, int readfd, int writefd) {
+    int j;
+    
+    printf("Reload started \n");
+    
+    for (j = 0; j < tablelen; j++) {
+        char * virus = table[j]->virusName;
+
+        printf("Sending disease :%s to parent through pipe: %s via fd: %d \n", virus, from_child_to_parent, writefd);
+
+        char * info1 = (char *) virus;
+        int info_length1 = strlen(virus) + 1;
+
+        send_info(writefd, info1, info_length1, bufferSize);
+
+        char * info2 = table[j]->bloom->vector;
+        int info_length2 = bloomSize;
+
+        send_info(writefd, info2, info_length2, bufferSize);
+    }
+
+    char buffer[2] = "#";
+    char * info1 = (char *) buffer;
+    int info_length1 = strlen(buffer) + 1;
+    send_info(writefd, info1, info_length1, bufferSize);
 }
 
 int vaccine_monitor_main(int argc, char** argv) {
@@ -39,7 +74,6 @@ int vaccine_monitor_main(int argc, char** argv) {
     char* line = NULL;
     size_t len = 0;
 
-    FILE* citizenRecordsFile;
     DIR* inputDirectory = NULL;
     struct dirent *direntp;
 
@@ -47,6 +81,7 @@ int vaccine_monitor_main(int argc, char** argv) {
     char from_parent_to_child[1000];
 
     static struct sigaction act;
+    static struct sigaction act_add_records;
 
     /*      ---------------     */
 
@@ -57,6 +92,11 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     sigaction(SIGINT, &act, NULL);
     sigaction(SIGQUIT, &act, NULL);
+
+    act_add_records.sa_handler = catchinterrupt_act_add_records;
+    sigfillset(&(act_add_records.sa_mask));
+
+    sigaction(SIGUSR1, &act_add_records, NULL);
 
     sprintf(from_child_to_parent, "from_child_to_parent_%d.fifo", id);
     sprintf(from_parent_to_child, "from_parent_to_child_%d.fifo", id);
@@ -157,7 +197,7 @@ int vaccine_monitor_main(int argc, char** argv) {
         int info_length1 = strlen(virus) + 1;
 
         send_info(writefd, info1, info_length1, bufferSize);
-        
+
         char * info2 = table[j]->bloom->vector;
         int info_length2 = bloomSize;
 
@@ -173,25 +213,54 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     while (1) {
         char * line = NULL;
-        
+
         if (writelog == 1) {
             writelog = 0;
             // writelog
+        }
+
+        if (add_records == 1) {
+            execute_add_records(table, tablelen, bloomSize, from_child_to_parent, bufferSize, readfd, writefd);
+            add_records = 0;
         }
 
         // read from pipe instead of stdin
         receive_info(readfd, &line, bufferSize);
-        token = strtok(line, " \n");
+        
 
         if (writelog == 1) {
-            writelog = 0;
-            // writelog
+            continue;
         }
+
+        if (add_records == 1) {
+            continue;            
+        }
+        
+        if (line == NULL) {
+            continue;
+        }
+        
+        token = strtok(line, " \n");
+
 
         if (token != NULL) {
 
-            if (!strcmp(token, "/travelRequest")) {
-                
+            if (!strcmp(token, "travelRequest")) {
+                char* tokens[5];
+
+                tokens[0] = strtok(NULL, " \n"); //citizenID
+                tokens[1] = strtok(NULL, " \n"); //date
+                tokens[2] = strtok(NULL, " \n"); //country
+                tokens[3] = strtok(NULL, " \n"); //country
+                tokens[4] = strtok(NULL, " \n"); //virusName
+
+                printf("tokens[0] = %s \n", tokens[0]);
+                printf("tokens[1] = %s \n", tokens[1]);
+                printf("tokens[2] = %s \n", tokens[2]);
+                printf("tokens[3] = %s \n", tokens[3]);
+                printf("tokens[4] = %s \n", tokens[4]);
+
+                travel_request_for_child(ht_viruses, ht_citizens, tokens[0], tokens[1], tokens[2], tokens[4], readfd, writefd, bufferSize);
             } else if (!strcmp(token, "/vaccineStatusBloom")) {
                 char* tokens[3];
 
@@ -216,7 +285,7 @@ int vaccine_monitor_main(int argc, char** argv) {
                 } else if (tokens[0] != NULL && tokens[1] == NULL) {
                     vaccine_status_id(ht_viruses, ht_citizens, tokens[0]);
                 } else if (tokens[0] != NULL && tokens[1] != NULL && tokens[2] == NULL) {
-                    vaccine_status_id_virus(ht_viruses, ht_citizens, tokens[0], tokens[1]);
+                    vaccine_status_id_virus(ht_viruses, ht_citizens, tokens[0], tokens[1], NULL);
                 } else { // more than 2
                     printf("syntax error\n");
                 }
@@ -372,13 +441,11 @@ int vaccine_monitor_main(int argc, char** argv) {
         free(line);
     }
 
-    fclose(citizenRecordsFile);
-
     hash_virus_destroy(ht_viruses);
     hash_citizen_destroy(ht_citizens);
     hash_country_destroy(ht_countries);
 
     printf("Child: <%d>: Exiting ... \n", id);
-     
+
     return 0;
 }

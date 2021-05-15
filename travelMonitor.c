@@ -17,7 +17,7 @@
 #include "hashtable_monitor.h"
 #include "BF.h"
 #include "record.h"
-#include "commands.h"
+#include "commands_vaccinemonitor.h"
 #include "constants.h"
 #include "commands_travelmonitor.h"
 
@@ -269,7 +269,7 @@ int main(int argc, char** argv) {
                 if (tokens[0] == NULL || tokens[1] == NULL || tokens[2] == NULL || tokens[3] == NULL || tokens[4] == NULL || tokens[5] != NULL) {
                     printf("syntax error\n");
                 } else {
-                    travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]);
+                    travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]);
                     totalRequests++;
                 }
             } else if (!strcmp(token, "/pid") || !strcmp(token, "pid")) {
@@ -301,7 +301,7 @@ int main(int argc, char** argv) {
                 if (tokens[0] == NULL || tokens[1] != NULL) {
                     printf("syntax error\n");
                 } else {
-                    add_vaccination_records(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0]);
+                    add_vaccination_records(ht_viruses, ht_countries, ht_monitors, bloomSize,bufferSize, tokens[0]);
                 }
             } else if (!strcmp(token, "/searchVaccinationStatus") || !strcmp(token, "searchVaccinationStatus")) {
                 char* tokens[2];
