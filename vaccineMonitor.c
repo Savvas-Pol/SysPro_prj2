@@ -63,7 +63,6 @@ void execute_add_records(HashtableVirusNode** table, int tablelen, int bloomSize
 }
 
 int vaccine_monitor_main(int argc, char** argv) {
-    srand(time(0));
 
     /*  ---     DECLARATIONS    --- */
 
@@ -85,6 +84,8 @@ int vaccine_monitor_main(int argc, char** argv) {
 
     /*      ---------------     */
 
+    srand(time(0));
+    
     read_arguments_for_vaccine_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &id);
 
     act.sa_handler = catchinterrupt2;
@@ -241,7 +242,6 @@ int vaccine_monitor_main(int argc, char** argv) {
         }
         
         token = strtok(line, " \n");
-
 
         if (token != NULL) {
 
