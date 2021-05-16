@@ -54,3 +54,23 @@ Date* duplicateDate(Date* d) {	//duplicates date given
 		return NULL;
 	}
 }
+
+int check_six_months(Date* d1, Date* d2) { //returns 1 if vaccination date is within six months, otherwise 0
+
+	// if (d1->year == d2->year) {
+	// 	if (d1->month - d2->month < 6) {
+	// 		return 1;
+	// 	} else if (d1->month - d2->month == 6) {
+	// 		if (d1->day <= d2->day) {
+	// 			return 1;
+	// 		} else {
+	// 			return 0;
+	// 		}
+	// 	} else {
+	// 		return 0;
+	// 	}
+	// } else {
+		
+	// }
+
+}

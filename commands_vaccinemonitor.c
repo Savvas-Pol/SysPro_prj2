@@ -156,22 +156,23 @@ int vaccine_status_id_virus(HashtableVirus* ht_viruses, HashtableCitizen* ht_cit
             if (vaccinated) {
                 printf("VACCINATED ON %d-%d-%d \n", sn1->date->day, sn1->date->month, sn1->date->year);
 
-                //                char tempdate[12] = { 0 };
-                //                strcpy(tempdate, travelDate);
-                //                char* token = strtok(tempdate, "-");
-                //                Date travelDateObj;
-                //                int j = 0;
-                //                while (token != NULL) {
-                //                    if (j == 0)
-                //                        travelDateObj.day = atoi(token);
-                //                    else if (j == 1)
-                //                        travelDateObj.month = atoi(token);
-                //                    else if (j == 2)
-                //                        travelDateObj.year = atoi(token);
-                //                    token = strtok(NULL, "-\n");
-                //                    j++;
-                //                }
-                // TODO:
+                char tempdate[12] = { 0 };
+                strcpy(tempdate, travelDate);
+                char* token = strtok(tempdate, "-");
+                Date* date_for_travel = calloc(1, sizeof (Date));
+                int j = 0;
+                while (token != NULL) {
+                    if (j == 0)
+                        date_for_travel->day = atoi(token);
+                    else if (j == 1)
+                        date_for_travel->month = atoi(token);
+                    else if (j == 2)
+                        date_for_travel->year = atoi(token);
+                    token = strtok(NULL, "-\n");
+                    j++;
+                }
+                printf("TRAVELLING ON %d-%d-%d \n", date_for_travel->day, date_for_travel->month, date_for_travel->year);
+                //check_six_months(sn1->date, date_for_travel);
                 return 0;
             } else {
                 printf("NOT VACCINATED \n");
@@ -658,20 +659,19 @@ int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_ci
     int q = vaccine_status_bloom(ht_viruses, citizenID, virusName);
 
     if (q == 0) {
-        printf("Citizen not vaccinated based on bloom filter of child \n");
+        printf("Citizen %s not vaccinated based on bloom filter of child \n", citizenID);
         return 0;
     }
 
     if (q == 2) {
-        printf("Virus not found on child\n");
+        printf("Virus %s not found on child\n", virusName);
         return 2;
     }
 
     q = vaccine_status_id_virus(ht_viruses, ht_citizens, citizenID, virusName, date);
 
-
     if (q == 0) {
-        char * info = "REQUEST ACCEPTED - YOU ARE VACCINATED \n";
+        char * info = "REQUEST ACCEPTED - HAPPY TRAVELS \n";
         int info_length = strlen(info) + 1;
 
         send_info(writefd, info, info_length, bufferSize);
