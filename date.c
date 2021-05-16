@@ -57,20 +57,20 @@ Date* duplicateDate(Date* d) {	//duplicates date given
 
 int check_six_months(Date* d1, Date* d2) { //returns 1 if vaccination date is within six months, otherwise 0
 
-	// if (d1->year == d2->year) {
-	// 	if (d1->month - d2->month < 6) {
-	// 		return 1;
-	// 	} else if (d1->month - d2->month == 6) {
-	// 		if (d1->day <= d2->day) {
-	// 			return 1;
-	// 		} else {
-	// 			return 0;
-	// 		}
-	// 	} else {
-	// 		return 0;
-	// 	}
-	// } else {
-		
-	// }
+	Date* maxDate = (Date *) calloc(1, sizeof(Date));	//max accepted date
 
+	maxDate->day = d1->day;
+	maxDate->month = d1->month + 6;
+	if(maxDate->month > 12) {
+		maxDate->year = d1->year + 1;
+		maxDate->month = maxDate->month % 12;
+	} else {
+		maxDate->year = d1->year;
+	}
+	printf("VACCINATION DATE: %d-%d-%d TRAVEL DATE: %d-%d-%d MAX DATE: %d-%d-%d\n", d1->day, d1->month, d1->year, d2->day, d2->month, d2->year, maxDate->day, maxDate->month, maxDate->year);
+	if(date_compare(maxDate, d2) == -1) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
