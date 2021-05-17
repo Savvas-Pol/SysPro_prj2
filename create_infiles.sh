@@ -7,16 +7,24 @@ counter=0
 declare -a countries
 
 if [[ $ARGC == $MAX_ARGS ]]; then	#check command line arguments
-	if [[ -f $1 ]]; then		#check if first argument is a file
-		if [ $3 -gt 0 ]; then	#check values of parameters
-			mkdir $2;			#create directory
+	if [[ -f $1 ]]; then			#check if first argument is a file
+		if [ $3 -gt 0 ]; then		#check values of parameters
+			if [ -d $2 ]; then		#create directory if it does not exist
+			    echo "Error!!! Directory $2 exists!!!";
+			    exit;
+			else
+				mkdir $2;
+			fi
 
-			# while IFS= read -r line; do 			#read inputFile line by line
-			# 	countries[$counter] = ( $(awk -F ' ') );
-			# 	echo "countries[$counter]";
-			# 	let counter=counter+1;
-			# done < "$1"
-
+			while read line; do 			#read inputFile line by line
+				echo "Line No. $counter : $line";
+				temp_array=($line);
+				# if [[ ! " ${countries[@]} " =~ " ${temp_array[3]} " ]]; then 	#check if array contains value
+				# 	countries=($temp_array[3]);
+				# fi
+				counter=$((counter+1));
+			done < "$1"
+			#for i in ${countries[@]}; do echo $i; done
 		else
 			echo "Wrong values!!!";
 		fi
