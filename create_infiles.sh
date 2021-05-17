@@ -17,14 +17,12 @@ if [[ $ARGC == $MAX_ARGS ]]; then	#check command line arguments
 			fi
 
 			while read line; do 			#read inputFile line by line
-				echo "Line No. $counter : $line";
-				temp_array=($line);
-				# if [[ ! " ${countries[@]} " =~ " ${temp_array[3]} " ]]; then 	#check if array contains value
-				# 	countries=($temp_array[3]);
-				# fi
+				temp_array=($line);		#copy line in temp_array
+				if [[ ! " ${countries[@]} " =~ " ${temp_array[3]} " ]]; then 	#check if countries array contains the third element of temp_array (country)
+				    countries[counter]=${temp_array[3]};
+				fi
 				counter=$((counter+1));
 			done < "$1"
-			#for i in ${countries[@]}; do echo $i; done
 		else
 			echo "Wrong values!!!";
 		fi
