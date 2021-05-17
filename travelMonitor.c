@@ -20,6 +20,7 @@
 #include "commands_vaccinemonitor.h"
 #include "constants.h"
 #include "commands_travelmonitor.h"
+#include "skiplist.h"
 
 int quit = 0;
 
@@ -40,7 +41,7 @@ int main(int argc, char** argv) {
     int bloomSize, bufferSize, numMonitors, i, j;
     int totalRequests = 0, totalAccepted = 0, totalRejected = 0;
     char* token;
-    char *inputDirectroyPath = NULL;
+    char *inputDirectoryPath = NULL;
 
     char* line = NULL;
 
@@ -49,11 +50,14 @@ int main(int argc, char** argv) {
 
     FILE* logfile;
 
-    /*      ---------------     */
-
     static struct sigaction act;
 
-    if ((inputDirectory = read_arguments_for_travel_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &inputDirectroyPath)) == NULL) { //read arguments from command line
+    // Skiplist* accepted_requests = skiplist_init(SKIP_LIST_MAX_LEVEL);
+    // Skiplist* rejected_requests = skiplist_init(SKIP_LIST_MAX_LEVEL);
+
+    /*      ---------------     */
+
+    if ((inputDirectory = read_arguments_for_travel_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &inputDirectoryPath)) == NULL) { //read arguments from command line
         return -1;
     } else {
         act.sa_handler = catchinterrupt;
@@ -65,14 +69,14 @@ int main(int argc, char** argv) {
 
     HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
     HashtableCountry* ht_countries = hash_country_create(HASHTABLE_NODES); //create HashTable for countries
-    HashtableMonitor* ht_monitors = hash_monitor_create(HASHTABLE_NODES);
+    HashtableMonitor* ht_monitors = hash_monitor_create(HASHTABLE_NODES); //create HashTable for monitors
 
     while ((direntp = readdir(inputDirectory)) != NULL) {
         if (direntp->d_name[0] != '.') {
             printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
 
-            HashtableCountryNode* cc = hash_country_search(ht_countries, direntp->d_name);
-            if (cc == NULL) {
+            HashtableCountryNode* country = hash_country_search(ht_countries, direntp->d_name);
+            if (country == NULL) {
                 hash_country_insert(ht_countries, direntp->d_name);
             }
         }
@@ -86,19 +90,7 @@ int main(int argc, char** argv) {
         hash_monitor_insert(ht_monitors, name);
     }
 
-    for (j = 0; j < numMonitors; j++) {
-        char name[100];
-        sprintf(name, "%d", j);
-
-        HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
-        sprintf(node->from_child_to_parent, "from_child_to_parent_%d.fifo", j);
-        sprintf(node->from_parent_to_child, "from_parent_to_child_%d.fifo", j);
-
-        printf("Monitor Node: j=%d, id=%s, %s, %s \n", j, node->monitorName, node->from_child_to_parent, node->from_parent_to_child);
-
-        mkfifo(node->from_child_to_parent, 0600);
-        mkfifo(node->from_parent_to_child, 0600);
-    }
+    create_monitors(ht_monitors, numMonitors);
 
     for (j = 0; j < numMonitors; j++) {
         char name[100];
@@ -108,7 +100,7 @@ int main(int argc, char** argv) {
 
         pid_t pid = fork();
 
-        if (pid > 0) {
+        if (pid > 0) {      //parent
             node->pid = pid;
 
             if ((node->fd_from_parent_to_child = open(node->from_parent_to_child, O_WRONLY)) < 0) {
@@ -124,20 +116,20 @@ int main(int argc, char** argv) {
             char * info1 = (char *) &bloomSize;
             int info_length1 = sizeof (bloomSize);
 
-            send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1);
+            send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1);    //first message is bloomSize
 
             char * info2 = (char *) &bufferSize;
             int info_length2 = sizeof (bufferSize);
 
-            send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2);
+            send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2);    //second message is bufferSize
 
-            char * info3 = inputDirectroyPath;
-            int info_length3 = strlen(inputDirectroyPath) + 1;
+            char * info3 = inputDirectoryPath;
+            int info_length3 = strlen(inputDirectoryPath) + 1;
 
             send_info(node->fd_from_parent_to_child, info3, info_length3, info_length3);
 
             printf("info_length1=%d, info_length2=%d, info_length3=%d\n", info_length1, info_length2, info_length3);
-        } else if (pid == 0) {
+        } else if (pid == 0) {      //child
             argc = 3;
             argv = malloc(sizeof (char*)*4);
             argv[0] = "vaccineMonitor";
@@ -147,10 +139,10 @@ int main(int argc, char** argv) {
             return vaccine_monitor_main(argc, argv);
         }
     }
-
+    //only parent continues from now on
     int tablelen;
 
-    HashtableCountryNode** table = hash_country_to_array(ht_countries, &tablelen);
+    HashtableCountryNode** table = hash_country_to_array(ht_countries, &tablelen);  //convert hash table to array to sort countries
 
     for (j = 0; j < tablelen; j++) {
         char * country = table[j]->countryName;
@@ -159,83 +151,13 @@ int main(int argc, char** argv) {
 
     printf("----------------------------------\n");
 
-    for (j = 0; j < tablelen; j++) {
-        char * country = table[j]->countryName;
-        table[j]->who = j % numMonitors;
+    send_countries_to_monitors(ht_monitors, table, tablelen, numMonitors, bufferSize);  //send countries round robin to monitors
 
-        char name[100];
-        sprintf(name, "%d", table[j]->who);
-
-        HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
-
-        int fd = node->fd_from_parent_to_child;
-
-        printf("Sending country :%s to worker %d through pipe: %s via fd: %d \n", country, table[j]->who, node->from_parent_to_child, fd);
-
-        char * info1 = (char *) country;
-        int info_length1 = strlen(country) + 1;
-
-        send_info(fd, info1, info_length1, bufferSize);
-    }
-
-    for (j = 0; j < numMonitors; j++) {
-        char name[100];
-        char buffer[2] = "#";
-        sprintf(name, "%d", j);
-
-        HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
-
-        int fd = node->fd_from_parent_to_child;
-
-        strcpy(buffer, "#");
-
-        char * info1 = (char *) buffer;
-        int info_length1 = strlen(buffer) + 1;
-
-        send_info(fd, info1, info_length1, bufferSize);
-    }
+    send_finishing_character(ht_monitors, numMonitors, bufferSize);     //send finishing character "#" to all monitors
 
     printf("----------------------------------\n");
 
-    for (j = 0; j < numMonitors; j++) {
-        char name[100];
-        sprintf(name, "%d", j);
-        HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
-
-        int fd = node->fd_from_child_to_parent;
-
-        while (1) {
-            char * info3 = NULL;
-            receive_info(fd, &info3, bufferSize);
-
-            char * buffer = info3;
-
-            if (buffer[0] == '#') {
-                free(buffer);
-                break;
-            }
-
-            char * virusName = info3;
-
-            HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName); //search if virus exists
-            if (virusNode == NULL) {
-                virusNode = hash_virus_insert(ht_viruses, virusName);
-                virusNode->bloom = bloom_init(bloomSize);
-                virusNode->vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
-                virusNode->not_vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
-            }
-
-            char * bloomVector = NULL;
-            receive_info(fd, &bloomVector, bloomSize);
-            
-            for (int k=0;k<bloomSize;k++) {
-                virusNode->bloom->vector[k] |= bloomVector[k];
-            }
-
-            free(bloomVector);            
-            free(buffer);            
-        }
-    }
+    receive_bloom_filter(ht_monitors, ht_viruses, numMonitors, bloomSize, bufferSize);
 
     int vtablelen;
 
@@ -272,8 +194,6 @@ int main(int argc, char** argv) {
                     travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]);
                     totalRequests++;
                 }
-            } else if (!strcmp(token, "/pid") || !strcmp(token, "pid")) {
-                printf("Parent pid is %d \n", getpid());
             } else if (!strcmp(token, "/travelStats") || !strcmp(token, "travelStats")) {
                 char* tokens[5];
 
@@ -316,6 +236,8 @@ int main(int argc, char** argv) {
                 }
             } else if (!strcmp(token, "/exit") || !strcmp(token, "exit")) {
                 break;
+            } else if (!strcmp(token, "/pid") || !strcmp(token, "pid")) {
+                printf("Parent pid is %d \n", getpid());
             } else {
                 printf("Invalid command!! Try again...\n");
             }

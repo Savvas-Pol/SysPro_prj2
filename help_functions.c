@@ -32,7 +32,7 @@ FILE* read_arguments(int argc, char** argv, int* bloomSize) { //reads arguments 
     return citizenRecordsFile;
 }
 
-DIR* read_arguments_for_travel_monitor(int argc, char** argv, int* bloomSize, int *bufferSize, int *numMonitors, char ** inputDirectroyPath) {
+DIR* read_arguments_for_travel_monitor(int argc, char** argv, int* bloomSize, int *bufferSize, int *numMonitors, char ** inputDirectoryPath) {
     int i;
 
     DIR* inputDirectory;
@@ -47,7 +47,7 @@ DIR* read_arguments_for_travel_monitor(int argc, char** argv, int* bloomSize, in
                     printf("Error in opening %s\n", argv[i + 1]);
                     return NULL;
                 } else {
-                    *inputDirectroyPath = argv[i + 1];
+                    *inputDirectoryPath = argv[i + 1];
                 }
             } else if (!strcmp(argv[i], "-b")) {
                 *bufferSize = atoi(argv[i + 1]);

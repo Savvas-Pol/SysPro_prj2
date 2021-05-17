@@ -22,7 +22,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 
     if (country == NULL) {
         printf("*****************\n");
-        printf("Country not found on parent\n");
+        printf("Country %s not found on parent\n", countryFrom);
         printf("*****************\n");
         return;
     }
@@ -31,18 +31,17 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 
     if (q == 0) {
         printf("*****************\n");
-        printf("Citizen not vaccinated based on bloom filter of parent \n");
+        printf("Citizen %s not vaccinated based on bloom filter of parent \n", citizenID);
         printf("*****************\n");
         return;
     }
 
     if (q == 2) {
         printf("*****************\n");
-        printf("Virus not found on parent\n");
+        printf("Virus %s not found on parent\n", virusName);
         printf("*****************\n");
         return;
     }
-
 
     char name[10] = {0};
     sprintf(name, "%d", country->who);
@@ -50,7 +49,6 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
     HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
 
     printf("Node for %s is %s \n", country->countryName, node->monitorName);
-
 
     char* command = malloc(strlen("travelRequest") + strlen(citizenID) + strlen(date) + strlen(countryFrom) + strlen(countryTo) + strlen(virusName) + 6);
     sprintf(command, "travelRequest %s %s %s %s %s", citizenID, date, countryFrom, countryTo, virusName); //reconstruct command
@@ -62,13 +60,12 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 
     send_info(node->fd_from_parent_to_child, info, info_length, bufferSize);
 
-    // read from pipe instead of stdin
     receive_info(node->fd_from_child_to_parent, &info, bufferSize);
 
     printf("*****************\n");
     printf("%s\n", info);
     printf("*****************\n");
-
+    //insert in skiplist
     free(command);
 }
 
