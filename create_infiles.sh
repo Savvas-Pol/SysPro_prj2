@@ -19,10 +19,18 @@ if [[ $ARGC == $MAX_ARGS ]]; then	#check command line arguments
 			while read line; do 			#read inputFile line by line
 				temp_array=($line);		#copy line in temp_array
 				if [[ ! " ${countries[@]} " =~ " ${temp_array[3]} " ]]; then 	#check if countries array contains the third element of temp_array (country)
-				    countries[counter]=${temp_array[3]};
+				    countries[counter]=${temp_array[3]};						#store new countries in array
 				fi
 				counter=$((counter+1));
 			done < "$1"
+
+			for i in ${countries[@]}; do 			#for each country
+				mkdir ./$2/$i; 						#create new subdirectory
+				for(( j=1; j<=$3; j++ )); do
+					touch ./$2/$i/${i}-${j}.txt;
+				done
+			done
+
 		else
 			echo "Wrong values!!!";
 		fi
