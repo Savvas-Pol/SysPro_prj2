@@ -37,7 +37,6 @@ if [[ $ARGC == $MAX_ARGS ]]; then	#check command line arguments
 				echo "$line" >> ./$2/${temp_array[3]}/${temp_array[3]}.txt;		#store lines in temp file
 			done < "$1"
 			
-			#ROUND ROBIN
 			for i in ${countries[@]}; do 			#for each country
 				counter=1;							#counter for round robin
 				while read line; do 
