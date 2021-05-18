@@ -27,8 +27,27 @@ if [[ $ARGC == $MAX_ARGS ]]; then	#check command line arguments
 			for i in ${countries[@]}; do 			#for each country
 				mkdir ./$2/$i; 						#create new subdirectory
 				for(( j=1; j<=$3; j++ )); do
-					touch ./$2/$i/${i}-${j}.txt;
+					touch ./$2/$i/${i}-${j}.txt;	#create numFilesPerDirectory
 				done
+				touch ./$2/$i/${i}.txt;	#create temp file for each country's records
+			done
+
+			while read line; do 			#read inputFile line by line
+				temp_array=($line);		#copy line in temp_array
+				echo "$line" >> ./$2/${temp_array[3]}/${temp_array[3]}.txt;		#store lines in temp file
+			done < "$1"
+			
+			#ROUND ROBIN
+			for i in ${countries[@]}; do 			#for each country
+				counter=1;							#counter for round robin
+				while read line; do 
+					echo "$line" >> ./$2/$i/${i}-${counter}.txt;		#append line to file
+					counter=$((counter+1));
+					if [[ $counter > $3 ]]; then	#if counter reaches numFilesPerDirectory, reset to 1
+						counter=1;
+					fi
+				done < ./$2/$i/$i.txt;			#read from temp file
+				rm ./$2/$i/${i}.txt;			#delete temp file
 			done
 
 		else
