@@ -1,3 +1,0 @@
-71 Richard Smith USA 71 SARS-COV-2 NO
-10 George Smith USA 51 COVID-2019 YES 23-11-2001
-68 Robert Garcia USA 62 EVD NO
