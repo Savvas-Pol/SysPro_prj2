@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
     /*  ---     DECLARATIONS    --- */
 
-    int bloomSize, bufferSize, numMonitors, i, j;
+    int bloomSize, bufferSize, numMonitors, i, j, requestID = 0;
     int totalRequests = 0, totalAccepted = 0, totalRejected = 0;
     char* token;
     char *inputDirectoryPath = NULL;
@@ -51,9 +51,6 @@ int main(int argc, char** argv) {
     FILE* logfile;
 
     static struct sigaction act;
-
-    // Skiplist* accepted_requests = skiplist_init(SKIP_LIST_MAX_LEVEL);
-    // Skiplist* rejected_requests = skiplist_init(SKIP_LIST_MAX_LEVEL);
 
     /*      ---------------     */
 
@@ -191,9 +188,10 @@ int main(int argc, char** argv) {
                 if (tokens[0] == NULL || tokens[1] == NULL || tokens[2] == NULL || tokens[3] == NULL || tokens[4] == NULL || tokens[5] != NULL) {
                     printf("syntax error\n");
                 } else {
-                    travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]);
-                    totalRequests++;
+                    travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], requestID);
+                    requestID++;
                 }
+                //printf("\n\nPARENT - requestID = %d\n\n", requestID);
             } else if (!strcmp(token, "/travelStats") || !strcmp(token, "travelStats")) {
                 char* tokens[5];
 

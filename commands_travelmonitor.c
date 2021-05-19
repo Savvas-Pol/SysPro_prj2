@@ -15,7 +15,7 @@
 #include "help_functions.h"
 #include "commands_vaccinemonitor.h"
 
-void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName) {
+void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName, int requestID) {
     printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
 
     HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
@@ -65,7 +65,37 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
     printf("*****************\n");
     printf("%s\n", info);
     printf("*****************\n");
-    //insert in skiplist
+    
+    char newID[100];
+    sprintf(newID, "%d", requestID);
+    Citizen* request = create_request(newID);
+
+    char tempdate[12] = { 0 };
+    strcpy(tempdate, date);
+    char* token = strtok(tempdate, "-");
+    Date* newDate = calloc(1, sizeof (Date));
+    int j = 0;
+    while (token != NULL) {
+        if (j == 0)
+            newDate->day = atoi(token);
+        else if (j == 1)
+            newDate->month = atoi(token);
+        else if (j == 2)
+            newDate->year = atoi(token);
+        token = strtok(NULL, "-\n");
+        j++;
+    }
+
+    if(!strcmp(info, "REQUEST ACCEPTED - HAPPY TRAVELS")) {
+    	HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
+    	skiplist_insert(node->vaccinated_persons, request, newDate, request->citizenID);
+    	printf("ACCEPTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
+    } else {
+    	HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
+    	skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
+    	printf("REJECTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
+    }
+
     free(command);
 }
 

@@ -22,3 +22,15 @@ void citizen_destroy(Citizen* c) {		//free
 	free(c->lastName);
 	free(c);
 }
+
+Citizen* create_request(char* id) {	//creates new request
+	Citizen* c = (Citizen*) calloc(1, sizeof (Citizen));
+
+	c->citizenID = strdup(id);
+	c->firstName = NULL;
+	c->lastName = NULL;
+	c->country = NULL;
+	c->age = 0;
+
+	return c;
+}
