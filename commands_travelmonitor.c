@@ -139,13 +139,30 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
     }
 
     if (virusNode != NULL) {
-        //calculate skiplists
-        totalAccepted = virusNode->vaccinated_persons->items;
-        totalRejected = virusNode->not_vaccinated_persons->items;
+     //    SkipListNode* accepted = virusNode->vaccinated_persons->head;
+     //    SkipListNode* rejected = virusNode->not_vaccinated_persons->head;
 
-        printf("TOTAL REQUESTS %d\n", totalAccepted+totalRejected);
-    	printf("ACCEPTED %d\n", totalAccepted);
-    	printf("REJECTED %d\n", totalRejected);
+     //    if(accepted != NULL) {
+	    //     while(strcmp(accepted->citizen->citizenID, "ZZZZZ")) {		//SEGMENTATION
+	    //     	if ((date_compare(accepted->citizen->date, date_from)) == 1 && (date_compare(accepted->citizen->date, date_to)) == -1) {
+	    //     		totalAccepted++;
+	    //     	}
+	    //     	accepted = accepted->next[0];
+	    //     }
+	    // }
+
+     //    if(rejected != NULL) {
+	    //     while(strcmp(rejected->citizen->citizenID, "ZZZZZ")) {
+	    //     	if ((date_compare(rejected->citizen->date, date_from)) == 1 && (date_compare(rejected->citizen->date, date_to)) == -1) {
+	    //     		totalRejected++;
+	    //     	}
+	    //     	rejected = rejected->next[0];
+	    //     }
+	    // }
+
+     //    printf("TOTAL REQUESTS %d\n", totalAccepted+totalRejected);
+    	// printf("ACCEPTED %d\n", totalAccepted);
+    	// printf("REJECTED %d\n", totalRejected);
     } else {
     	printf("VIRUS %s NOT FOUND\n", virusName);
     }

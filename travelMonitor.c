@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     /*  ---     DECLARATIONS    --- */
 
     int bloomSize, bufferSize, numMonitors, i, j, requestID = 0;
-    int totalRequests = 0, totalAccepted = 0, totalRejected = 0;
+    int totalAccepted = 0, totalRejected = 0;
     char* token;
     char *inputDirectoryPath = NULL;
 
@@ -257,7 +257,7 @@ int main(int argc, char** argv) {
             temp = temp->next;
         }
     }
-    fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalRequests);
+    fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalAccepted+totalRejected);
     fprintf(logfile, "ACCEPTED %d\n", totalAccepted);
     fprintf(logfile, "REJECTED %d\n", totalRejected);
 

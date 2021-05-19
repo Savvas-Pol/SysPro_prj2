@@ -16,7 +16,6 @@ typedef struct SkipList {
 	struct SkipListNode* head;
 	struct SkipListNode* tail;
 	int maxLevel;
-	int items;
 } SkipList;
 
 SkipListNode* skiplist_create_node(Citizen* citizen, Date* date, int maxLevel);		//creates new node in skiplist
