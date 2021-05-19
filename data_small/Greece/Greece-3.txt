@@ -1,0 +1,8 @@
+13 Megan Hunt Greece 30 EVD NO
+58 Penny Watson Greece 74 EVD NO
+77 Devon Martinez Greece 64 SARS-1 YES 12-11-2005
+78 Christopher Curry Greece 50 H1N1 YES 22-09-2010
+78 Christopher Curry Greece 50 EVD NO
+90 Jessica Ellis Greece 18 EVD NO
+39 Margaret Johnson Greece 36 FLU-2018 NO
+41 Ashley Williams Greece 19 SARS-1 YES 29-08-2004

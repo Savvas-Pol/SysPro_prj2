@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 
         pid_t pid = fork();
 
-        if (pid > 0) {      //parent
+        if (pid > 0) { //parent
             node->pid = pid;
 
             if ((node->fd_from_parent_to_child = open(node->from_parent_to_child, O_WRONLY)) < 0) {
@@ -113,12 +113,12 @@ int main(int argc, char** argv) {
             char * info1 = (char *) &bloomSize;
             int info_length1 = sizeof (bloomSize);
 
-            send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1);    //first message is bloomSize
+            send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1); //first message is bloomSize
 
             char * info2 = (char *) &bufferSize;
             int info_length2 = sizeof (bufferSize);
 
-            send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2);    //second message is bufferSize
+            send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2); //second message is bufferSize
 
             char * info3 = inputDirectoryPath;
             int info_length3 = strlen(inputDirectoryPath) + 1;
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
             send_info(node->fd_from_parent_to_child, info3, info_length3, info_length3);
 
             printf("info_length1=%d, info_length2=%d, info_length3=%d\n", info_length1, info_length2, info_length3);
-        } else if (pid == 0) {      //child
+        } else if (pid == 0) { //child
             argc = 3;
             argv = malloc(sizeof (char*)*4);
             argv[0] = "vaccineMonitor";
@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
     //only parent continues from now on
     int tablelen;
 
-    HashtableCountryNode** table = hash_country_to_array(ht_countries, &tablelen);  //convert hash table to array to sort countries
+    HashtableCountryNode** table = hash_country_to_array(ht_countries, &tablelen); //convert hash table to array to sort countries
 
     for (j = 0; j < tablelen; j++) {
         char * country = table[j]->countryName;
@@ -148,9 +148,9 @@ int main(int argc, char** argv) {
 
     printf("----------------------------------\n");
 
-    send_countries_to_monitors(ht_monitors, table, tablelen, numMonitors, bufferSize);  //send countries round robin to monitors
+    send_countries_to_monitors(ht_monitors, table, tablelen, numMonitors, bufferSize); //send countries round robin to monitors
 
-    send_finishing_character(ht_monitors, numMonitors, bufferSize);     //send finishing character "#" to all monitors
+    send_finishing_character(ht_monitors, numMonitors, bufferSize); //send finishing character "#" to all monitors
 
     printf("----------------------------------\n");
 
@@ -168,11 +168,23 @@ int main(int argc, char** argv) {
 
     while (quit != 1) { //commands from user
         size_t len = 0;
+
+        sigset_t set1;
+        sigemptyset(&set1);
+
+        sigprocmask(SIG_SETMASK, &set1, NULL); // allow everything here!
+
         printf("\nGive command: ");
         if (getline(&line, &len, stdin) == 0 || quit == 1) {
             break;
         }
         token = strtok(line, " \n");
+
+        sigaddset(&set1, SIGINT);
+        sigaddset(&set1, SIGQUIT);
+        sigaddset(&set1, SIGUSR1);
+
+        sigprocmask(SIG_SETMASK, &set1, NULL); // disallow everything here!
 
         if (token != NULL) {
             if (!strcmp(token, "/travelRequest") || !strcmp(token, "travelRequest")) {
@@ -219,7 +231,7 @@ int main(int argc, char** argv) {
                 if (tokens[0] == NULL || tokens[1] != NULL) {
                     printf("syntax error\n");
                 } else {
-                    add_vaccination_records(ht_viruses, ht_countries, ht_monitors, bloomSize,bufferSize, tokens[0]);
+                    add_vaccination_records(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0]);
                 }
             } else if (!strcmp(token, "/searchVaccinationStatus") || !strcmp(token, "searchVaccinationStatus")) {
                 char* tokens[2];
@@ -257,7 +269,7 @@ int main(int argc, char** argv) {
             temp = temp->next;
         }
     }
-    fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalAccepted+totalRejected);
+    fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalAccepted + totalRejected);
     fprintf(logfile, "ACCEPTED %d\n", totalAccepted);
     fprintf(logfile, "REJECTED %d\n", totalRejected);
 

@@ -1,0 +1,4 @@
+76 Elizabeth Henderson China 45 COVID-2019 NO
+37 Lacey Walker China 36 SARS-COV-2 YES 24-05-2015
+37 Lacey Walker China 36 MERS-COV YES 06-11-2003
+99 Linda Bruce China 51 SARS-COV-2 YES 10-07-2014

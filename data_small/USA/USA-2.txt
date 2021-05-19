@@ -1,0 +1,3 @@
+71 Richard Smith USA 71 COVID-2019 NO
+71 Richard Smith USA 71 H1N1 NO
+68 Robert Garcia USA 62 SARS-1 YES 22-11-2012

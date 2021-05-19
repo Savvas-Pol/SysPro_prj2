@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <sys/stat.h>
 
 #include "hashtable_monitor.h"
@@ -116,8 +117,15 @@ void create_monitors(HashtableMonitor* ht_monitors, int numMonitors) {
 
         printf("Monitor Node: j=%d, id=%s, %s, %s \n", j, node->monitorName, node->from_child_to_parent, node->from_parent_to_child);
 
-        mkfifo(node->from_child_to_parent, 0600);
-        mkfifo(node->from_parent_to_child, 0600);
+        if (mkfifo(node->from_child_to_parent, 0600) == -1 && errno == EEXIST) {
+            unlink(node->from_child_to_parent);
+            mkfifo(node->from_child_to_parent, 0600);            
+        }
+        
+        if (mkfifo(node->from_parent_to_child, 0600) == -1 && errno == EEXIST) {
+            unlink(node->from_parent_to_child);
+            mkfifo(node->from_parent_to_child, 0600);            
+        }
     }
 }
 

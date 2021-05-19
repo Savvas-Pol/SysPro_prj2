@@ -1,0 +1,6 @@
+3 Jonathan Rodriguez France 23 H1N1 NO
+88 Calvin Beltran France 74 SARS-COV-2 YES 05-01-2003
+5 Lee Rodriguez France 42 SARS-1 YES 10-08-2003
+23 Kathleen Cox France 26 EVD YES 10-03-2001
+11 Jesus Patton France 55 SARS-1 YES 10-12-2009
+28 Paige Rodriguez France 49 EVD YES 07-09-2006

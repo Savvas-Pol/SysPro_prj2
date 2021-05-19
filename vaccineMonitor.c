@@ -16,6 +16,11 @@
 #include "commands_vaccinemonitor.h"
 #include "constants.h"
 
+#define HashtableFilenames HashtableCountry
+#define hash_filenames_insert hash_country_insert
+#define hash_filenames_create hash_country_create
+#define hash_filenames_search hash_country_search
+
 // "${OUTPUT_PATH}" -m 4 -b 2000 -s 1000 -i id
 
 int writelog = 0;
@@ -35,12 +40,68 @@ void catchinterrupt_act_add_records(int signo) {
     add_records = 1;
 }
 
-void execute_add_records(HashtableVirusNode** table, int tablelen, int bloomSize, char * from_child_to_parent, int bufferSize, int readfd, int writefd) {
+void execute_add_records(char * inputDirectoryPath, HashtableFilenames * ht_filenames, HashtableCitizen* ht_citizens, HashtableCountry* ht_countries, HashtableVirus* ht_viruses, HashtableVirusNode** table2, int tablelen2, int bloomSize, char * from_child_to_parent, int bufferSize, int readfd, int writefd) {
     int j;
-    
+    DIR* inputDirectory = NULL;
+    struct dirent *direntp;
+
     printf("Reload started \n");
-    
-    for (j = 0; j < tablelen; j++) {
+
+    int lencountries = 0;
+    HashtableCountryNode** carray = hash_country_to_array(ht_countries, &lencountries);
+
+    for (int i = 0; i < lencountries; i++) {
+        char * buffer = carray[i]->countryName;
+
+        char * buffer4 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1);
+        strcpy(buffer4, inputDirectoryPath);
+        strcat(buffer4, "/");
+        strcat(buffer4, buffer);
+
+        if (!(inputDirectory = opendir(buffer4))) {
+            printf("Error in opening %s\n", buffer4);
+        } else {
+            while ((direntp = readdir(inputDirectory)) != NULL) {
+                if (direntp->d_name[0] != '.') {
+                    printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
+
+                    char * buffer5 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1 + strlen(direntp->d_name) + 1);
+                    strcpy(buffer5, inputDirectoryPath);
+                    strcat(buffer5, "/");
+                    strcat(buffer5, buffer);
+                    strcat(buffer5, "/");
+                    strcat(buffer5, direntp->d_name);
+
+                    if (hash_filenames_search(ht_filenames, buffer5) == NULL) {
+                        FILE * citizenRecordsFile = fopen(buffer5, "r");
+
+                        printf("Reading ... inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
+
+                        int r;
+                        char * line = NULL;
+                        size_t len;
+                        while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
+                            Record record;
+
+                            fill_record(line, &record); //create a temp record
+                            insert_citizen_record(ht_viruses, ht_citizens, ht_countries, bloomSize, record, 1); //flag=1 means from file
+                            free_record(&record); //free temp record
+                        }
+
+                        fclose(citizenRecordsFile);
+                        free(buffer5);
+                    }
+                }
+            }
+        }
+
+        free(buffer4);
+    }
+
+    HashtableVirusNode** table = hash_virus_to_array(ht_viruses, &tablelen2);
+
+
+    for (j = 0; j < tablelen2; j++) {
         char * virus = table[j]->virusName;
 
         printf("Sending disease :%s to parent through pipe: %s via fd: %d \n", virus, from_child_to_parent, writefd);
@@ -85,7 +146,7 @@ int vaccine_monitor_main(int argc, char** argv) {
     /*      ---------------     */
 
     srand(time(0));
-    
+
     read_arguments_for_vaccine_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &id);
 
     act.sa_handler = catchinterrupt2;
@@ -125,6 +186,7 @@ int vaccine_monitor_main(int argc, char** argv) {
     HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
     HashtableCitizen* ht_citizens = hash_citizen_create(HASHTABLE_NODES); //create HashTable for citizens
     HashtableCountry* ht_countries = hash_country_create(HASHTABLE_NODES); //create HashTable for countries
+    HashtableFilenames * ht_filenames = hash_filenames_create(HASHTABLE_NODES);
 
     while (1) {
         char * info3 = NULL;
@@ -164,17 +226,22 @@ int vaccine_monitor_main(int argc, char** argv) {
 
                     FILE * citizenRecordsFile = fopen(buffer5, "r");
 
-                    int r;
-                    while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
-                        Record record;
+                    if (citizenRecordsFile != NULL) {
+                        int r;
 
-                        fill_record(line, &record); //create a temp record
-                        insert_citizen_record(ht_viruses, ht_citizens, ht_countries, bloomSize, record, 1); //flag=1 means from file
-                        free_record(&record); //free temp record
+                        hash_filenames_insert(ht_filenames, buffer5);
+
+                        while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
+                            Record record;
+
+                            fill_record(line, &record); //create a temp record
+                            insert_citizen_record(ht_viruses, ht_citizens, ht_countries, bloomSize, record, 1); //flag=1 means from file
+                            free_record(&record); //free temp record
+                        }
+
+                        fclose(citizenRecordsFile);
+                        free(buffer5);
                     }
-
-                    fclose(citizenRecordsFile);
-                    free(buffer5);
                 }
             }
         }
@@ -221,27 +288,38 @@ int vaccine_monitor_main(int argc, char** argv) {
         }
 
         if (add_records == 1) {
-            execute_add_records(table, tablelen, bloomSize, from_child_to_parent, bufferSize, readfd, writefd);
+            execute_add_records(inputDirectoryPath, ht_filenames, ht_citizens, ht_countries, ht_viruses, table, tablelen, bloomSize, from_child_to_parent, bufferSize, readfd, writefd);
             add_records = 0;
         }
 
+        sigset_t set1;
+        sigemptyset(&set1);
+
+        sigprocmask(SIG_SETMASK, &set1, NULL); // allow everything here!
+
         // read from pipe instead of stdin
         receive_info(readfd, &line, bufferSize);
-        
+
 
         if (writelog == 1) {
             continue;
         }
 
         if (add_records == 1) {
-            continue;            
+            continue;
         }
-        
+
         if (line == NULL) {
             continue;
         }
-        
+
         token = strtok(line, " \n");
+
+        sigaddset(&set1, SIGINT);
+        sigaddset(&set1, SIGQUIT);
+        sigaddset(&set1, SIGUSR1);
+
+        sigprocmask(SIG_SETMASK, &set1, NULL); // disallow everything here!
 
         if (token != NULL) {
 
@@ -455,6 +533,7 @@ int vaccine_monitor_main(int argc, char** argv) {
     hash_virus_destroy(ht_viruses);
     hash_citizen_destroy(ht_citizens);
     hash_country_destroy(ht_countries);
+    hash_country_destroy(ht_filenames);
 
     printf("Child: <%d>: Exiting ... \n", id);
 

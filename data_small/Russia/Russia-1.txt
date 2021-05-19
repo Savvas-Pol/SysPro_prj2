@@ -1,0 +1,6 @@
+32 Patrick Park Russia 62 COVID-2019 NO
+25 Taylor Page Russia 34 MERS-COV NO
+36 Summer Rangel Russia 18 FLU-2018 NO
+34 Caitlin Schultz Russia 21 SARS-COV-2 NO
+15 Denise Myers Russia 51 H1N1 NO
+65 Amy Rodriguez Russia 28 SARS-1 NO

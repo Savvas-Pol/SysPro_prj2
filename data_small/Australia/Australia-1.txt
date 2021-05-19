@@ -1,0 +1,8 @@
+49 Ashley Eaton Australia 17 SARS-COV-2 NO
+49 Ashley Eaton Australia 17 MERS-COV NO
+69 Jeffrey Lee Australia 38 H1N1 YES 24-08-2007
+81 Wesley Roman Australia 74 COVID-2019 NO
+97 Stephanie Espinoza Australia 12 MERS-COV NO
+95 Jonathan Huynh Australia 21 FLU-2018 NO
+95 Jonathan Huynh Australia 21 H1N1 NO
+62 Rachel Blevins Australia 20 FLU-2018 NO

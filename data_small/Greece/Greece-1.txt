@@ -1,0 +1,9 @@
+13 Megan Hunt Greece 30 COVID-2019 NO
+13 Megan Hunt Greece 30 SARS-COV-2 NO
+58 Penny Watson Greece 74 MERS-COV YES 16-07-2009
+77 Devon Martinez Greece 64 H1N1 NO
+78 Christopher Curry Greece 50 FLU-2018 NO
+85 Angela Miller Greece 24 H1N1 YES 29-06-2006
+90 Jessica Ellis Greece 18 SARS-1 YES 29-11-2018
+39 Margaret Johnson Greece 36 SARS-COV-2 NO
+41 Ashley Williams Greece 19 H1N1 NO

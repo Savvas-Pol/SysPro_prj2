@@ -1,0 +1,7 @@
+43 Eugene Coleman Switzerland 70 SARS-COV-2 YES 31-01-2011
+43 Eugene Coleman Switzerland 70 MERS-COV YES 14-01-2001
+12 Veronica Mcdaniel Switzerland 17 EVD NO
+98 Robert Miller Switzerland 49 SARS-COV-2 NO
+80 Ryan Moreno Switzerland 62 SARS-1 YES 19-08-2013
+89 Monica Greene Switzerland 31 MERS-COV NO
+0 Alfred Boone Switzerland 30 MERS-COV NO

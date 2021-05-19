@@ -1,0 +1,8 @@
+50 James Davis Switzerland 62 EVD NO
+43 Eugene Coleman Switzerland 70 H1N1 YES 29-12-2013
+12 Veronica Mcdaniel Switzerland 17 MERS-COV YES 31-08-2015
+42 Gregory Sanders Switzerland 17 H1N1 YES 18-01-2016
+26 Julie Flores Switzerland 66 FLU-2018 NO
+80 Ryan Moreno Switzerland 62 H1N1 YES 11-07-2018
+0 Alfred Boone Switzerland 30 H1N1 YES 14-04-2003
+0 Alfred Boone Switzerland 30 COVID-2019 NO

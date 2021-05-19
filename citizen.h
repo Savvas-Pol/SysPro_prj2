@@ -12,6 +12,6 @@ typedef struct Citizen {
 Citizen* citizen_create( char* citizenID, char* firstName, char* lastName, char* country, int age);	//creates new citizen
 void citizen_destroy(Citizen* c);		//free
 
-Citizen* create_request(char* id);
+Citizen* create_request(char* id, char* countryTo);
 
 #endif

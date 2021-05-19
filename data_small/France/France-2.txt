@@ -1,0 +1,6 @@
+70 Lauren Mccoy France 63 EVD YES 25-08-2000
+3 Jonathan Rodriguez France 23 FLU-2018 YES 30-08-2009
+88 Calvin Beltran France 74 COVID-2019 YES 13-12-2004
+5 Lee Rodriguez France 42 SARS-COV-2 YES 25-08-2010
+11 Jesus Patton France 55 COVID-2019 NO
+28 Paige Rodriguez France 49 COVID-2019 YES 07-10-2018

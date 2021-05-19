@@ -1,0 +1,7 @@
+29 Jason Ross Turkey 75 MERS-COV YES 31-01-2010
+87 David Daniels Turkey 36 EVD NO
+93 Angela Rogers Turkey 14 SARS-1 NO
+44 Curtis Johnson Turkey 51 EVD YES 11-09-2020
+44 Curtis Johnson Turkey 51 COVID-2019 NO
+40 Mary Smith Turkey 37 FLU-2018 YES 06-05-2004
+91 Donna Jacobs Turkey 52 SARS-COV-2 NO

@@ -1,0 +1,6 @@
+18 Joshua Gibson Brazil 24 H1N1 YES 23-10-2003
+74 Beverly Hamilton Brazil 45 SARS-COV-2 NO
+59 Jamie Wright Brazil 42 SARS-COV-2 NO
+59 Jamie Wright Brazil 42 SARS-1 YES 19-04-2019
+14 Micheal Kaiser Brazil 67 SARS-1 YES 22-01-2019
+57 Paul Garcia Brazil 49 SARS-1 YES 25-06-2005

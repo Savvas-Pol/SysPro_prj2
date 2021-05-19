@@ -1,0 +1,7 @@
+96 Tiffany Ward Turkey 50 SARS-COV-2 YES 21-05-2015
+87 David Daniels Turkey 36 FLU-2018 YES 29-05-2016
+8 Ashley Simmons Turkey 42 MERS-COV YES 19-02-2015
+21 James Martinez Turkey 42 MERS-COV YES 02-05-2016
+44 Curtis Johnson Turkey 51 MERS-COV YES 20-08-2018
+40 Mary Smith Turkey 37 EVD NO
+40 Mary Smith Turkey 37 SARS-COV-2 NO

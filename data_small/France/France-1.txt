@@ -1,0 +1,7 @@
+35 Teresa Wyatt France 66 EVD NO
+3 Jonathan Rodriguez France 23 EVD YES 13-08-2001
+88 Calvin Beltran France 74 H1N1 NO
+5 Lee Rodriguez France 42 COVID-2019 NO
+11 Jesus Patton France 55 H1N1 NO
+11 Jesus Patton France 55 SARS-COV-2 YES 28-02-2003
+19 Alexis Sparks France 48 COVID-2019 YES 12-09-2003

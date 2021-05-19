@@ -1,0 +1,5 @@
+82 Anthony Wilkinson Italy 36 MERS-COV NO
+48 Lori West Italy 45 SARS-1 NO
+52 Barry Fisher Italy 77 COVID-2019 NO
+52 Barry Fisher Italy 77 EVD NO
+54 Cory Hensley Italy 41 SARS-COV-2 NO

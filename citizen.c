@@ -3,34 +3,34 @@
 
 #include "citizen.h"
 
-Citizen* citizen_create(char* citizenID, char* firstName, char* lastName, char* country, int age) {	//creates new citizen
-	Citizen* c = (Citizen*) calloc(1, sizeof (Citizen));
+Citizen* citizen_create(char* citizenID, char* firstName, char* lastName, char* country, int age) { //creates new citizen
+    Citizen* c = (Citizen*) calloc(1, sizeof (Citizen));
 
-	c->citizenID = strdup(citizenID);
-	c->firstName = strdup(firstName);
-	c->lastName = strdup(lastName);
-	c->country = strdup(country);
-	c->age = age;
+    c->citizenID = strdup(citizenID);
+    c->firstName = strdup(firstName);
+    c->lastName = strdup(lastName);
+    c->country = strdup(country);
+    c->age = age;
 
-	return c;
+    return c;
 }
 
-void citizen_destroy(Citizen* c) {		//free
-	free(c->citizenID);
-	free(c->country);
-	free(c->firstName);
-	free(c->lastName);
-	free(c);
+void citizen_destroy(Citizen* c) { //free
+    free(c->citizenID);
+    free(c->country);
+    free(c->firstName);
+    free(c->lastName);
+    free(c);
 }
 
-Citizen* create_request(char* id) {	//creates new request
-	Citizen* c = (Citizen*) calloc(1, sizeof (Citizen));
+Citizen* create_request(char* id, char * countryTo) { //creates new request
+    Citizen* c = (Citizen*) calloc(1, sizeof (Citizen));
 
-	c->citizenID = strdup(id);
-	c->firstName = NULL;
-	c->lastName = NULL;
-	c->country = NULL;
-	c->age = 0;
+    c->citizenID = strdup(id);
+    c->firstName = NULL;
+    c->lastName = NULL;
+    c->country = countryTo;
+    c->age = 0;
 
-	return c;
+    return c;
 }

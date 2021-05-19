@@ -192,8 +192,10 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
 
 int receive_info(int fd, char **pstart, int bufferSize) {
     int infolength;
+    int n = 0;
     //read(fd, (char*) &infolength, sizeof (infolength));
-    if (read(fd, (char*) &infolength, sizeof (infolength)) == -1) {
+
+    if ((n=read(fd, (char*) &infolength, sizeof (infolength))) == -1) {
         if (errno == EINTR) {
             return 0;
         } else {
@@ -201,9 +203,15 @@ int receive_info(int fd, char **pstart, int bufferSize) {
             exit(1);
         }
     }
+    
+    if (n == 0) {
+        exit(1);
+    }
+    
+    
     *pstart = malloc(infolength);
 
-    int n = 0;
+    n = 0;
 
     char * info = *pstart;
 

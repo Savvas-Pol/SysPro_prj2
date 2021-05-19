@@ -1,0 +1,7 @@
+53 Zachary Stewart Egypt 66 COVID-2019 NO
+27 Michael Levine Egypt 11 H1N1 NO
+27 Michael Levine Egypt 11 SARS-1 NO
+1 Barbara Anderson Egypt 48 SARS-COV-2 YES 25-08-2008
+56 Sheila Guerrero Egypt 41 H1N1 YES 06-11-2009
+45 Anna Barnett Egypt 63 MERS-COV YES 26-09-2016
+31 Robert Tucker Egypt 64 EVD NO

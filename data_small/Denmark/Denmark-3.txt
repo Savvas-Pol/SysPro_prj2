@@ -1,0 +1,4 @@
+46 Michael Patrick Denmark 14 SARS-1 NO
+61 Danielle Smith Denmark 48 MERS-COV NO
+20 Cheryl Olson Denmark 60 EVD NO
+86 Joseph Lewis Denmark 68 EVD YES 14-05-2012
