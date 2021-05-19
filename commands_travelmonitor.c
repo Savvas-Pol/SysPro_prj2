@@ -279,14 +279,24 @@ void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_co
 }
 
 void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* citizenID) {
-    printf("Called search_vaccination_status with: %s\n", citizenID);
+    // char name[10] = {0};
+    // sprintf(name, "%d", country->who);
 
-    char* command = malloc(strlen("./searchVaccinationStatus") + sizeof (citizenID) + 1);
+    // HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
 
-    sprintf(command, "./searchVaccinationStatus %s", citizenID);
+    // printf("Node for %s is %s \n", country->countryName, node->monitorName);
 
-    printf("New command: %s\n", command);
-    free(command);
+    // char* command = malloc(strlen("searchVaccinationStatus") + strlen(citizenID) + 2);
+    // sprintf(command, "searchVaccinationStatus %s", citizenID); //reconstruct command
+
+    // printf("Sending command :%s to worker %d through pipe: %s via fd: %d \n", command, country->who, node->from_parent_to_child, node->fd_from_parent_to_child);
+
+    // char * info = command;
+    // int info_length = strlen(command) + 1;
+    // //for
+    // send_info(node->fd_from_parent_to_child, info, info_length, bufferSize);
+
+    // free(command);
 }
 
 

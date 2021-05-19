@@ -678,39 +678,43 @@ int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_ci
     q = vaccine_status_id_virus(ht_viruses, ht_citizens, citizenID, virusName, date);
 
     if (q == 0) {
-        char * info = "REQUEST ACCEPTED - HAPPY TRAVELS \n";
+        char * info = "REQUEST ACCEPTED - HAPPY TRAVELS";
         int info_length = strlen(info) + 1;
 
         send_info(writefd, info, info_length, bufferSize);
     }
 
     if (q == 1) {
-        char * info = "REQUEST REJECTED - YOU ARE NOT VACCINATED \n";
+        char * info = "REQUEST REJECTED - YOU ARE NOT VACCINATED";
         int info_length = strlen(info) + 1;
 
         send_info(writefd, info, info_length, bufferSize);
     }
 
     if (q == 2) {
-        char * info = "REQUEST REJECTED - VIRUS NOT FOUND - YOU ARE NOT VACCINATED \n";
+        char * info = "REQUEST REJECTED - VIRUS NOT FOUND - YOU ARE NOT VACCINATED";
         int info_length = strlen(info) + 1;
 
         send_info(writefd, info, info_length, bufferSize);
     }
 
     if (q == 3) {
-        char * info = "REQUEST REJECTED - VIRUS NOT FOUND - YOU DO NOT EXIST\n";
+        char * info = "REQUEST REJECTED - YOU DO NOT EXIST - YOU ARE NOT VACCINATED";
         int info_length = strlen(info) + 1;
 
         send_info(writefd, info, info_length, bufferSize);
     }
     
     if (q == 4) {
-        char * info = "REQUEST REJECTED - TRAVEL DATE NOT WITHIN SIX MONTHS\n";
+        char * info = "REQUEST REJECTED - YOU WILL NEED ANOTHER VACCINATION BEFORE TRAVEL DATE";
         int info_length = strlen(info) + 1;
 
         send_info(writefd, info, info_length, bufferSize);
     }
 
     return q;
+}
+
+void search_vaccination_status_for_child(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableCitizen* ht_citizens, int bloomSize, int bufferSize, int readfd, int writefd, char* citizenID) {
+    printf("search_vaccination_status_for_child\n");
 }

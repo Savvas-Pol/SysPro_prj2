@@ -261,6 +261,17 @@ int vaccine_monitor_main(int argc, char** argv) {
                 printf("tokens[4] = %s \n", tokens[4]);
 
                 travel_request_for_child(ht_viruses, ht_citizens, tokens[0], tokens[1], tokens[2], tokens[4], readfd, writefd, bufferSize);
+            } else if (!strcmp(token, "searchVaccinationStatus")) {
+                char* tokens[1];
+
+                tokens[0] = strtok(NULL, " \n"); //citizenID
+
+                if (tokens[0] == NULL || tokens[1] == NULL || tokens[2] != NULL) {
+                    printf("syntax error\n");
+                } else {
+                    vaccine_status_bloom(ht_viruses, tokens[0], tokens[1]);
+                }
+                search_vaccination_status_for_child(ht_viruses, ht_countries, ht_citizens, bloomSize, bufferSize, readfd, writefd, tokens[0]);
             } else if (!strcmp(token, "/vaccineStatusBloom")) {
                 char* tokens[3];
 
