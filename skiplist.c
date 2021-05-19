@@ -16,6 +16,7 @@ SkipList* skiplist_init(int maxLevel) {			//initialize skiplist with given size
 
 	SkipList* sl = malloc(sizeof (SkipList));
 	sl->maxLevel = maxLevel;
+	sl->items = 0;
 	sl->head = skiplist_create_node(NULL, NULL, maxLevel);
 	sl->tail = skiplist_create_node(NULL, NULL, maxLevel);
 
@@ -102,6 +103,7 @@ void skiplist_insert(SkipList* sl, Citizen * citizen, Date * date, char * id) {
 			update[i]->next[i] = l;
 		}
 	}
+	sl->items++;
 }
 
 void skiplist_delete(SkipList* sl, char * id) {			//delete node with given id
@@ -129,4 +131,5 @@ void skiplist_delete(SkipList* sl, char * id) {			//delete node with given id
 		free(l->next);
 		free(l);
 	}
+	sl->items--;
 }

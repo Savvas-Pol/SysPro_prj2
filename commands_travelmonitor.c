@@ -103,12 +103,11 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
     //printf("Called travel_stats with: %s, %s, %s\n", virusName, date1, date2);
 
     HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
-    HashtableCountryNode* temp;
-    int totalRequests = 0, totalAccepted = 0, totalRejected = 0, i, j;
-
+    int totalAccepted = 0, totalRejected = 0, i, j;
+    
     Date* date_from = calloc(1, sizeof (Date));
     Date* date_to = calloc(1, sizeof (Date));
-
+    
     char tempdate1[11]; //max possible digits of a date
     char tempdate2[11];
 
@@ -125,7 +124,6 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
         token = strtok(NULL, "-\n");
         j++;
     }
-
     strcpy(tempdate2, date2);
     token = strtok(tempdate2, "-");
     j = 0;
@@ -141,18 +139,16 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
     }
 
     if (virusNode != NULL) {
-        for (i = 0; i < HASHTABLE_NODES; i++) {
-            temp = ht_countries->nodes[i];
-            while (temp != NULL) {
-                //calculate
-                temp = temp->next;
-            }
-        }
-    }
+        //calculate skiplists
+        totalAccepted = virusNode->vaccinated_persons->items;
+        totalRejected = virusNode->not_vaccinated_persons->items;
 
-    printf("TOTAL REQUESTS %d\n", totalRequests);
-    printf("ACCEPTED %d\n", totalAccepted);
-    printf("REJECTED %d\n", totalRejected);
+        printf("TOTAL REQUESTS %d\n", totalAccepted+totalRejected);
+    	printf("ACCEPTED %d\n", totalAccepted);
+    	printf("REJECTED %d\n", totalRejected);
+    } else {
+    	printf("VIRUS %s NOT FOUND\n", virusName);
+    }
 
 }
 
