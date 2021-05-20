@@ -38,6 +38,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
         skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
 
+        destroy_request(request);
         return;
     }
 
@@ -82,7 +83,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
         skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
         //printf("REJECTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
     }
-
+    destroy_request(request);
     free(info);
     free(command);
 }

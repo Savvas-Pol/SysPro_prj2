@@ -13,5 +13,6 @@ Citizen* citizen_create( char* citizenID, char* firstName, char* lastName, char*
 void citizen_destroy(Citizen* c);		//free
 
 Citizen* create_request(char* id, char* countryTo);
+void destroy_request(Citizen* request);
 
 #endif

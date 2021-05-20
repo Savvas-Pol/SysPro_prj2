@@ -160,7 +160,6 @@ void free_record(Record* temp) { //free
 }
 
 void send_info(int fd, char *info, int infolength, int bufferSize) {
-    //write(fd, (char*) &infolength, sizeof (infolength));
     if (write(fd, (char*) &infolength, sizeof (infolength)) == -1) {
         if (errno == EINTR) {
             return;
@@ -193,7 +192,6 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
 int receive_info(int fd, char **pstart, int bufferSize) {
     int infolength;
     int n = 0;
-    //read(fd, (char*) &infolength, sizeof (infolength));
 
     if ((n=read(fd, (char*) &infolength, sizeof (infolength))) == -1) {
         if (errno == EINTR) {
@@ -207,7 +205,6 @@ int receive_info(int fd, char **pstart, int bufferSize) {
     if (n == 0) {
         exit(1);
     }
-    
     
     *pstart = malloc(infolength);
 

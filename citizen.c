@@ -34,3 +34,8 @@ Citizen* create_request(char* id, char * countryTo) { //creates new request
 
     return c;
 }
+
+void destroy_request(Citizen* request) {
+	free(request->citizenID);
+	free(request);
+}
