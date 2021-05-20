@@ -33,21 +33,8 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 	    sprintf(newID, "%d", requestID);
 	    Citizen* request = create_request(newID, countryTo);
 
-	    char tempdate[12] = {0};
-	    strcpy(tempdate, date);
-	    char* token = strtok(tempdate, "-");
-	    Date* newDate = calloc(1, sizeof (Date));
-	    int j = 0;
-	    while (token != NULL) {
-	        if (j == 0)
-	            newDate->day = atoi(token);
-	        else if (j == 1)
-	            newDate->month = atoi(token);
-	        else if (j == 2)
-	            newDate->year = atoi(token);
-	        token = strtok(NULL, "-\n");
-	        j++;
-	    }
+	    Date* newDate = char_to_date(date);
+	   
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
         skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
 
@@ -84,21 +71,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
     sprintf(newID, "%d", requestID);
     Citizen* request = create_request(newID, countryTo);
 
-    char tempdate[12] = {0};
-    strcpy(tempdate, date);
-    char* token = strtok(tempdate, "-");
-    Date* newDate = calloc(1, sizeof (Date));
-    int j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            newDate->day = atoi(token);
-        else if (j == 1)
-            newDate->month = atoi(token);
-        else if (j == 2)
-            newDate->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
+    Date* newDate = char_to_date(date);
 
     if (!strcmp(info, "REQUEST ACCEPTED - HAPPY TRAVELS")) {
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
@@ -120,38 +93,8 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
     HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
     int totalAccepted = 0, totalRejected = 0, j;
 
-    Date* date_from = calloc(1, sizeof (Date));
-    Date* date_to = calloc(1, sizeof (Date));
-
-    char tempdate1[11]; //max possible digits of a date
-    char tempdate2[11];
-
-    strcpy(tempdate1, date1);
-    char* token = strtok(tempdate1, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_from->day = atoi(token);
-        else if (j == 1)
-            date_from->month = atoi(token);
-        else if (j == 2)
-            date_from->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
-    strcpy(tempdate2, date2);
-    token = strtok(tempdate2, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_to->day = atoi(token);
-        else if (j == 1)
-            date_to->month = atoi(token);
-        else if (j == 2)
-            date_to->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
+    Date* date_from = char_to_date(date1);
+    Date* date_to = char_to_date(date2);
 
     if (virusNode != NULL) {
         SkipListNode* accepted = virusNode->vaccinated_persons->head->next[0];
@@ -192,38 +135,8 @@ void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_count
     HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
     int totalAccepted = 0, totalRejected = 0, j;
 
-    Date* date_from = calloc(1, sizeof (Date));
-    Date* date_to = calloc(1, sizeof (Date));
-
-    char tempdate1[11]; //max possible digits of a date
-    char tempdate2[11];
-
-    strcpy(tempdate1, date1);
-    char* token = strtok(tempdate1, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_from->day = atoi(token);
-        else if (j == 1)
-            date_from->month = atoi(token);
-        else if (j == 2)
-            date_from->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
-    strcpy(tempdate2, date2);
-    token = strtok(tempdate2, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_to->day = atoi(token);
-        else if (j == 1)
-            date_to->month = atoi(token);
-        else if (j == 2)
-            date_to->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
+    Date* date_from = char_to_date(date1);
+    Date* date_to = char_to_date(date2);
 
     if (virusNode != NULL) {
         SkipListNode* accepted = virusNode->vaccinated_persons->head->next[0];

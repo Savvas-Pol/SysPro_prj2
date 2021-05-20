@@ -156,21 +156,8 @@ int vaccine_status_id_virus(HashtableVirus* ht_viruses, HashtableCitizen* ht_cit
             if (vaccinated) {
                 printf("VACCINATED ON %d-%d-%d \n", sn1->date->day, sn1->date->month, sn1->date->year);
 
-                char tempdate[12] = { 0 };
-                strcpy(tempdate, travelDate);
-                char* token = strtok(tempdate, "-");
-                Date* date_for_travel = calloc(1, sizeof (Date));
-                int j = 0;
-                while (token != NULL) {
-                    if (j == 0)
-                        date_for_travel->day = atoi(token);
-                    else if (j == 1)
-                        date_for_travel->month = atoi(token);
-                    else if (j == 2)
-                        date_for_travel->year = atoi(token);
-                    token = strtok(NULL, "-\n");
-                    j++;
-                }
+                Date* date_for_travel = char_to_date(travelDate);
+                
                 printf("TRAVELLING ON %d-%d-%d \n", date_for_travel->day, date_for_travel->month, date_for_travel->year);
                 if(date_compare(sn1->date, date_for_travel) == 1) {
                     return 1;
@@ -312,39 +299,8 @@ void population_status_country_dates(HashtableVirus* ht_viruses, HashtableCountr
     HashtableCountryNode* countryNode = hash_country_search(ht_countries, country);
     int vaccinated_people = 0, total = 0, j;
     double percentage;
-    Date* date_from = calloc(1, sizeof (Date));
-    Date* date_to = calloc(1, sizeof (Date));
-
-    char tempdate1[11]; //max possible digits of a date
-    char tempdate2[11];
-
-    strcpy(tempdate1, date1);
-    char* token = strtok(tempdate1, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_from->day = atoi(token);
-        else if (j == 1)
-            date_from->month = atoi(token);
-        else if (j == 2)
-            date_from->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
-
-    strcpy(tempdate2, date2);
-    token = strtok(tempdate2, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_to->day = atoi(token);
-        else if (j == 1)
-            date_to->month = atoi(token);
-        else if (j == 2)
-            date_to->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
+    Date* date_from = char_to_date(date1);
+    Date* date_to = char_to_date(date2);
 
     if (countryNode != NULL) {
         if (virusNode != NULL) {
@@ -509,40 +465,8 @@ void pop_status_by_age_country_dates(HashtableVirus* ht_viruses, HashtableCountr
     int sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, total1 = 0, total2 = 0, total3 = 0, total4 = 0, j;
     double percentage1, percentage2, percentage3, percentage4;
 
-    Date* date_from = calloc(1, sizeof (Date));
-    Date* date_to = calloc(1, sizeof (Date));
-
-    char tempdate1[11];
-    char tempdate2[11];
-
-    strcpy(tempdate1, date1);
-    char* token = strtok(tempdate1, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_from->day = atoi(token);
-        else if (j == 1)
-            date_from->month = atoi(token);
-        else if (j == 2)
-            date_from->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
-
-    strcpy(tempdate2, date2);
-
-    token = strtok(tempdate2, "-");
-    j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            date_to->day = atoi(token);
-        else if (j == 1)
-            date_to->month = atoi(token);
-        else if (j == 2)
-            date_to->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
+    Date* date_from = char_to_date(date1);
+    Date* date_to = char_to_date(date2);
 
     if (countryNode != NULL) {
         if (virusNode != NULL) {
