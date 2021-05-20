@@ -213,3 +213,48 @@ void receive_bloom_filter(HashtableMonitor* ht_monitors, HashtableVirus* ht_viru
         }
     }
 }
+
+HashtableMonitorNode** hash_monitor_to_array(HashtableMonitor* ht, int* len) {
+
+    int i, j;
+    HashtableMonitorNode* temp;
+
+    *len = 0;
+
+    for (i = 0; i < ht->hash_nodes; i++) {
+        temp = ht->nodes[i];
+
+        while (temp != NULL) {
+            (*len)++;
+
+            temp = temp->next;
+        }
+    }
+
+    HashtableMonitorNode** table = malloc(sizeof (HashtableMonitorNode*)*(*len));
+
+    int counter = 0;
+
+    for (i = 0; i < ht->hash_nodes; i++) {
+        temp = ht->nodes[i];
+
+        while (temp != NULL) {
+            table[counter++] = temp;
+
+            temp = temp->next;
+        }
+    }
+    
+     for (i = 0; i < *len - 1; i++) {               //sort array alphabetically
+        for (j = i+1; j < *len; j++) {
+            if(strcmp(table[i]->monitorName,table[j]->monitorName)>0){
+                temp = table[i];
+                table[i] = table[j];
+                table[j] = temp;
+            }
+        }
+     }
+
+    return table;
+    
+}

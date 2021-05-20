@@ -96,7 +96,7 @@ void hash_country_delete(HashtableCountry* ht, char* countryName) {
     }
 }
 
-HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int * len) {
+HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int* len) {
     
     int i, j;
     HashtableCountryNode* temp;

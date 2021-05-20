@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
                 if (tokens[0] == NULL || tokens[1] != NULL) {
                     printf("syntax error\n");
                 } else {
-                    search_vaccination_status(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0]);
+                    search_vaccination_status(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, numMonitors, tokens[0]);
                 }
             } else if (!strcmp(token, "/exit") || !strcmp(token, "exit")) {
                 break;

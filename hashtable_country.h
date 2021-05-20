@@ -22,6 +22,6 @@ HashtableCountryNode* hash_country_search(HashtableCountry* ht, char* countryNam
 HashtableCountryNode* hash_country_insert(HashtableCountry* ht, char* countryName);
 void hash_country_delete(HashtableCountry* ht, char* countryName);
 
-HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int * len);
+HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int* len);
 
 #endif

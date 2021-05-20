@@ -300,7 +300,6 @@ int vaccine_monitor_main(int argc, char** argv) {
         // read from pipe instead of stdin
         receive_info(readfd, &line, bufferSize);
 
-
         if (writelog == 1) {
             continue;
         }
@@ -332,23 +331,12 @@ int vaccine_monitor_main(int argc, char** argv) {
                 tokens[3] = strtok(NULL, " \n"); //country
                 tokens[4] = strtok(NULL, " \n"); //virusName
 
-                printf("tokens[0] = %s \n", tokens[0]);
-                printf("tokens[1] = %s \n", tokens[1]);
-                printf("tokens[2] = %s \n", tokens[2]);
-                printf("tokens[3] = %s \n", tokens[3]);
-                printf("tokens[4] = %s \n", tokens[4]);
-
                 travel_request_for_child(ht_viruses, ht_citizens, tokens[0], tokens[1], tokens[2], tokens[4], readfd, writefd, bufferSize);
             } else if (!strcmp(token, "searchVaccinationStatus")) {
                 char* tokens[1];
 
                 tokens[0] = strtok(NULL, " \n"); //citizenID
 
-                if (tokens[0] == NULL || tokens[1] == NULL || tokens[2] != NULL) {
-                    printf("syntax error\n");
-                } else {
-                    vaccine_status_bloom(ht_viruses, tokens[0], tokens[1]);
-                }
                 search_vaccination_status_for_child(ht_viruses, ht_countries, ht_citizens, bloomSize, bufferSize, readfd, writefd, tokens[0]);
             } else if (!strcmp(token, "/vaccineStatusBloom")) {
                 char* tokens[3];
@@ -372,7 +360,7 @@ int vaccine_monitor_main(int argc, char** argv) {
                 if (tokens[0] == NULL) {
                     printf("syntax error\n");
                 } else if (tokens[0] != NULL && tokens[1] == NULL) {
-                    vaccine_status_id(ht_viruses, ht_citizens, tokens[0]);
+                    vaccine_status_id(ht_viruses, ht_citizens, tokens[0], bufferSize, readfd, writefd);
                 } else if (tokens[0] != NULL && tokens[1] != NULL && tokens[2] == NULL) {
                     vaccine_status_id_virus(ht_viruses, ht_citizens, tokens[0], tokens[1], NULL);
                 } else { // more than 2

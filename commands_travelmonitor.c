@@ -16,7 +16,7 @@
 #include "commands_vaccinemonitor.h"
 
 void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName, int requestID) {
-    printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
+    //printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
 
     HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
 
@@ -69,7 +69,6 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
     char newID[100];
     sprintf(newID, "%d", requestID);
     Citizen* request = create_request(newID, countryTo);
-
 
     char tempdate[12] = {0};
     strcpy(tempdate, date);
@@ -250,7 +249,7 @@ void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_count
 }
 
 void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char* countryName) {
-    printf("Called add_vaccination_records with: %s\n", countryName);
+    //printf("Called add_vaccination_records with: %s\n", countryName);
 
     HashtableCountryNode* country = hash_country_search(ht_countries, countryName);
 
@@ -305,25 +304,35 @@ void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_co
     }
 }
 
-void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* citizenID) {
-    // char name[10] = {0};
-    // sprintf(name, "%d", country->who);
+void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, int numMonitors, char* citizenID) {
 
-    // HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+	int i;
+	
+    char name[10] = {0};
+    int tablelen;
+    HashtableMonitorNode** table = hash_monitor_to_array(ht_monitors, &tablelen);
 
-    // printf("Node for %s is %s \n", country->countryName, node->monitorName);
+    char* command = malloc(strlen("searchVaccinationStatus") + strlen(citizenID) + 2);
+    sprintf(command, "searchVaccinationStatus %s", citizenID); //reconstruct command
 
-    // char* command = malloc(strlen("searchVaccinationStatus") + strlen(citizenID) + 2);
-    // sprintf(command, "searchVaccinationStatus %s", citizenID); //reconstruct command
+    printf("Sending command : %s to all monitors\n", command);
 
-    // printf("Sending command :%s to worker %d through pipe: %s via fd: %d \n", command, country->who, node->from_parent_to_child, node->fd_from_parent_to_child);
+    char * info = command;
+    int info_length = strlen(command) + 1;
+    for(i = 0; i < tablelen; i++) {
+    	send_info(table[i]->fd_from_parent_to_child, info, info_length, bufferSize);
+    }
 
-    // char * info = command;
-    // int info_length = strlen(command) + 1;
-    // //for
-    // send_info(node->fd_from_parent_to_child, info, info_length, bufferSize);
+    // for(i = 0; i < numMonitors; i++) {
+    // 	char name[10] = {0};
+	   //  sprintf(name, "%d", i);
 
-    // free(command);
+	   //  HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+    // 	receive_info(node->fd_from_child_to_parent, &info, bufferSize);
+
+	    
+    // }
+    free(command);
 }
 
 

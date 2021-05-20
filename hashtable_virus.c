@@ -111,7 +111,7 @@ void hash_virus_delete(HashtableVirus* ht, char* virusName) {
 	}
 }
 
-HashtableVirusNode** hash_virus_to_array(HashtableVirus* ht, int * len) {
+HashtableVirusNode** hash_virus_to_array(HashtableVirus* ht, int* len) {
     
     int i, j;
     HashtableVirusNode* temp;

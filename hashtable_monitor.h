@@ -34,4 +34,6 @@ void send_countries_to_monitors(HashtableMonitor* ht_monitors, HashtableCountryN
 void send_finishing_character(HashtableMonitor* ht_monitors, int numMonitors, int bufferSize);
 void receive_bloom_filter(HashtableMonitor* ht_monitors, HashtableVirus* ht_viruses, int numMonitors, int bloomSize, int bufferSize);
 
+HashtableMonitorNode** hash_monitor_to_array(HashtableMonitor* ht, int* len);
+
 #endif

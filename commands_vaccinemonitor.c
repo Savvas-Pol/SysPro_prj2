@@ -196,7 +196,7 @@ int vaccine_status_id_virus(HashtableVirus* ht_viruses, HashtableCitizen* ht_cit
     }
 }
 
-void vaccine_status_id(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens, char * citizenID) {
+void vaccine_status_id(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens, char * citizenID, int bufferSize, int readfd, int writefd) {
 
     int i;
     HashtableVirusNode* temp;
@@ -204,6 +204,8 @@ void vaccine_status_id(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens
     HashtableCitizenNode* citizenNode = hash_citizen_search(ht_citizens, citizenID);
 
     if (citizenNode != NULL) {
+        printf("%s %s %s %s\n", citizenNode->citizen->citizenID, citizenNode->citizen->firstName, citizenNode->citizen->lastName, citizenNode->citizen->country);
+        printf("AGE %d\n", citizenNode->citizen->age);
         for (i = 0; i < HASHTABLE_NODES; i++) {
             temp = ht_viruses->nodes[i];
             while (temp != NULL) {
@@ -716,5 +718,7 @@ int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_ci
 }
 
 void search_vaccination_status_for_child(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableCitizen* ht_citizens, int bloomSize, int bufferSize, int readfd, int writefd, char* citizenID) {
-    printf("search_vaccination_status_for_child\n");
+
+    vaccine_status_id(ht_viruses, ht_citizens, citizenID, bufferSize, readfd, writefd);
+
 }

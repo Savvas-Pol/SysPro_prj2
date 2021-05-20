@@ -26,6 +26,6 @@ HashtableVirusNode* hash_virus_search(HashtableVirus* ht, char* virusName);
 HashtableVirusNode* hash_virus_insert(HashtableVirus* ht, char* virusName);
 void hash_virus_delete(HashtableVirus* ht, char* virusName);
 
-HashtableVirusNode** hash_virus_to_array(HashtableVirus* ht, int * len);
+HashtableVirusNode** hash_virus_to_array(HashtableVirus* ht, int* len);
 
 #endif
