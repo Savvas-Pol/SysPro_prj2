@@ -21,25 +21,41 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
     HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
 
     if (country == NULL) {
-        printf("*****************\n");
-        printf("Country %s not found on parent\n", countryFrom);
-        printf("*****************\n");
+        printf("REQUEST REJECTED - COUNTRY NOT FOUND\n");
         return;
     }
 
     int q = vaccine_status_bloom(ht_viruses, citizenID, virusName);
 
     if (q == 0) {
-        printf("*****************\n");
-        printf("Citizen %s not vaccinated based on bloom filter of parent \n", citizenID);
-        printf("*****************\n");
+        printf("REQUEST REJECTED - YOU ARE NOT VACCINATED\n");
+        char newID[100];
+	    sprintf(newID, "%d", requestID);
+	    Citizen* request = create_request(newID, countryTo);
+
+	    char tempdate[12] = {0};
+	    strcpy(tempdate, date);
+	    char* token = strtok(tempdate, "-");
+	    Date* newDate = calloc(1, sizeof (Date));
+	    int j = 0;
+	    while (token != NULL) {
+	        if (j == 0)
+	            newDate->day = atoi(token);
+	        else if (j == 1)
+	            newDate->month = atoi(token);
+	        else if (j == 2)
+	            newDate->year = atoi(token);
+	        token = strtok(NULL, "-\n");
+	        j++;
+	    }
+        HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
+        skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
+
         return;
     }
 
     if (q == 2) {
-        printf("*****************\n");
-        printf("Virus %s not found on parent\n", virusName);
-        printf("*****************\n");
+        printf("REQUEST REJECTED - VIRUS NOT FOUND\n");
         return;
     }
 
@@ -62,9 +78,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 
     receive_info(node->fd_from_child_to_parent, &info, bufferSize);
 
-    printf("*****************\n");
     printf("%s\n", info);
-    printf("*****************\n");
 
     char newID[100];
     sprintf(newID, "%d", requestID);
@@ -89,11 +103,11 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
     if (!strcmp(info, "REQUEST ACCEPTED - HAPPY TRAVELS")) {
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
         skiplist_insert(node->vaccinated_persons, request, newDate, request->citizenID);
-        printf("ACCEPTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
+        //printf("ACCEPTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
     } else {
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
         skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
-        printf("REJECTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
+        //printf("REJECTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
     }
 
     free(info);
@@ -254,9 +268,7 @@ void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_co
     HashtableCountryNode* country = hash_country_search(ht_countries, countryName);
 
     if (country == NULL) {
-        printf("*****************\n");
         printf("Country not found on parent\n");
-        printf("*****************\n");
         return;
     }
 
