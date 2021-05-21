@@ -1,0 +1,3 @@
+60 Michele Pham Germany 66 H1N1 YES 26-05-2014
+4 Susan Lopez Germany 69 FLU-2018 NO
+24 Stacy Smith Germany 67 COVID-2019 NO

@@ -1,0 +1,6 @@
+82 Anthony Wilkinson Italy 36 EVD YES 03-01-2009
+82 Anthony Wilkinson Italy 36 SARS-1 NO
+48 Lori West Italy 45 EVD YES 02-03-2003
+52 Barry Fisher Italy 77 FLU-2018 NO
+54 Cory Hensley Italy 41 COVID-2019 NO
+54 Cory Hensley Italy 41 FLU-2018 YES 06-10-2019

@@ -1,0 +1,6 @@
+32 Patrick Park Russia 62 SARS-1 YES 08-04-2013
+36 Summer Rangel Russia 18 MERS-COV YES 19-04-2018
+34 Caitlin Schultz Russia 21 EVD YES 28-03-2020
+15 Denise Myers Russia 51 SARS-1 YES 12-11-2019
+65 Amy Rodriguez Russia 28 FLU-2018 NO
+65 Amy Rodriguez Russia 28 COVID-2019 YES 06-06-2020

@@ -1,0 +1,5 @@
+2 Stephanie Miller Argentina 38 COVID-2019 NO
+2 Stephanie Miller Argentina 38 EVD NO
+66 Troy Taylor Argentina 41 H1N1 YES 27-06-2018
+66 Troy Taylor Argentina 41 COVID-2019 YES 09-10-2006
+7 Kelly Beard Argentina 55 SARS-COV-2 NO

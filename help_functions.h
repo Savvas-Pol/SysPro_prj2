@@ -21,6 +21,4 @@ int receive_info(int fd, char **info, int bufferSize);
 
 int receive_int(int fd, int buffersize);
 
-
-
 #endif

@@ -1,0 +1,4 @@
+6 Andrew Payne Germany 46 MERS-COV NO
+83 Lauren Herrera Germany 21 FLU-2018 NO
+24 Stacy Smith Germany 67 MERS-COV NO
+24 Stacy Smith Germany 67 SARS-COV-2 NO

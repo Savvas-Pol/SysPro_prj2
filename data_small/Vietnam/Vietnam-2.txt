@@ -1,0 +1,4 @@
+38 Andrew Elliott Vietnam 33 EVD YES 07-01-2002
+73 Barbara Williams Vietnam 70 H1N1 YES 15-03-2006
+72 Jason Goodwin Vietnam 40 MERS-COV YES 28-08-2001
+55 Lindsey Hicks Vietnam 56 MERS-COV YES 22-03-2012

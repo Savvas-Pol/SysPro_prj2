@@ -24,7 +24,6 @@
 
 int quit = 0;
 
-// "${OUTPUT_PATH}" -m 4 -b 2000 -s 1000 -i data_small
 int vaccine_monitor_main(int argc, char** argv);
 
 void catchinterrupt(int signo) {

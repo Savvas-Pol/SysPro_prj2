@@ -1,0 +1,6 @@
+18 Joshua Gibson Brazil 24 FLU-2018 YES 26-09-2009
+74 Beverly Hamilton Brazil 45 MERS-COV YES 20-10-2015
+17 Earl Estrada Brazil 64 FLU-2018 NO
+59 Jamie Wright Brazil 42 FLU-2018 NO
+63 Jeremy Mccoy Brazil 42 MERS-COV NO
+16 Cheyenne Martinez Brazil 15 SARS-1 NO

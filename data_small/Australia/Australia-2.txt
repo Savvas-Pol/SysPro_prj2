@@ -1,0 +1,8 @@
+49 Ashley Eaton Australia 17 EVD NO
+69 Jeffrey Lee Australia 38 FLU-2018 YES 05-09-2019
+69 Jeffrey Lee Australia 38 SARS-1 NO
+81 Wesley Roman Australia 74 H1N1 YES 26-04-2013
+33 Joseph Johnson Australia 60 MERS-COV YES 27-04-2018
+95 Jonathan Huynh Australia 21 COVID-2019 NO
+62 Rachel Blevins Australia 20 MERS-COV NO
+62 Rachel Blevins Australia 20 COVID-2019 NO

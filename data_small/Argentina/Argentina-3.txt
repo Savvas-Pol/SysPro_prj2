@@ -1,0 +1,5 @@
+2 Stephanie Miller Argentina 38 SARS-1 NO
+92 Douglas Reed Argentina 22 EVD YES 27-01-2007
+66 Troy Taylor Argentina 41 SARS-COV-2 NO
+94 Jennifer Powers Argentina 58 FLU-2018 NO
+79 Jeremy Taylor Argentina 38 MERS-COV YES 26-08-2014

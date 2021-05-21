@@ -1,0 +1,3 @@
+22 Jared Hodges USA 46 COVID-2019 NO
+71 Richard Smith USA 71 EVD NO
+10 George Smith USA 51 H1N1 YES 23-05-2020

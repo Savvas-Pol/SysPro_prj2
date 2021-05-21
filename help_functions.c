@@ -159,7 +159,7 @@ void free_record(Record* temp) { //free
     }
 }
 
-int write_all(int fd, void*buff, size_t size) {
+int write_all(int fd, void*buff, size_t size) {      //function from http://cgi.di.uoa.gr/~antoulas/k24/lectures/l11.pdf
     int sent, n;
     for (sent = 0; sent < size; sent += n) {
         if ((n = write(fd, buff + sent, size - sent)) == -1) {
@@ -169,7 +169,7 @@ int write_all(int fd, void*buff, size_t size) {
     return sent;
 }
 
-int read_all(int fd, void*buff, size_t size) {
+int read_all(int fd, void*buff, size_t size) {      //function from http://cgi.di.uoa.gr/~antoulas/k24/lectures/l11.pdf
     int sent, n;
     for (sent = 0; sent < size; sent += n) {
         if ((n = read(fd, buff + sent, size - sent)) == -1) {

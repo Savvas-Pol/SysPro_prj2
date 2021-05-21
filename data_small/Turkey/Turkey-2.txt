@@ -1,0 +1,7 @@
+96 Tiffany Ward Turkey 50 H1N1 NO
+87 David Daniels Turkey 36 MERS-COV YES 05-11-2006
+93 Angela Rogers Turkey 14 COVID-2019 NO
+21 James Martinez Turkey 42 SARS-1 NO
+44 Curtis Johnson Turkey 51 SARS-COV-2 NO
+40 Mary Smith Turkey 37 SARS-1 NO
+47 Jeffery Martinez Turkey 79 H1N1 YES 15-10-2005

@@ -1,0 +1,7 @@
+53 Zachary Stewart Egypt 66 FLU-2018 YES 10-04-2019
+27 Michael Levine Egypt 11 EVD NO
+64 Dean Serrano Egypt 52 COVID-2019 NO
+1 Barbara Anderson Egypt 48 SARS-1 YES 08-01-2002
+56 Sheila Guerrero Egypt 41 FLU-2018 YES 02-01-2000
+45 Anna Barnett Egypt 63 FLU-2018 NO
+31 Robert Tucker Egypt 64 MERS-COV YES 22-06-2002

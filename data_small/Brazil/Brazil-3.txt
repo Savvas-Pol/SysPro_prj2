@@ -1,0 +1,6 @@
+74 Beverly Hamilton Brazil 45 COVID-2019 NO
+74 Beverly Hamilton Brazil 45 SARS-1 YES 13-12-2005
+59 Jamie Wright Brazil 42 EVD NO
+63 Jeremy Mccoy Brazil 42 COVID-2019 YES 12-07-2014
+16 Cheyenne Martinez Brazil 15 SARS-COV-2 YES 24-07-2019
+57 Paul Garcia Brazil 49 FLU-2018 YES 20-06-2002

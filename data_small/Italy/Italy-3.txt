@@ -1,0 +1,5 @@
+82 Anthony Wilkinson Italy 36 SARS-COV-2 YES 30-07-2019
+48 Lori West Italy 45 H1N1 NO
+52 Barry Fisher Italy 77 H1N1 YES 07-11-2009
+51 Kyle Mccoy Italy 34 H1N1 YES 08-05-2015
+54 Cory Hensley Italy 41 SARS-1 YES 29-02-2012

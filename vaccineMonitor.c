@@ -11,17 +11,11 @@
 #include "hashtable_virus.h"
 #include "hashtable_citizen.h"
 #include "hashtable_country.h"
+#include "hashtable_filenames.h"
 #include "BF.h"
 #include "record.h"
 #include "commands_vaccinemonitor.h"
 #include "constants.h"
-
-#define HashtableFilenames HashtableCountry
-#define hash_filenames_insert hash_country_insert
-#define hash_filenames_create hash_country_create
-#define hash_filenames_search hash_country_search
-
-// "${OUTPUT_PATH}" -m 4 -b 2000 -s 1000 -i id
 
 int writelog = 0;
 int add_records = 0;
@@ -522,7 +516,7 @@ int vaccine_monitor_main(int argc, char** argv) {
     hash_virus_destroy(ht_viruses);
     hash_citizen_destroy(ht_citizens);
     hash_country_destroy(ht_countries);
-    hash_country_destroy(ht_filenames);
+    hash_filenames_destroy(ht_filenames);
 
     printf("Child: <%d>: Exiting ... \n", id);
 

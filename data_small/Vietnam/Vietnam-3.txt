@@ -1,0 +1,4 @@
+38 Andrew Elliott Vietnam 33 H1N1 NO
+73 Barbara Williams Vietnam 70 EVD NO
+67 Carl Brown Vietnam 69 COVID-2019 NO
+55 Lindsey Hicks Vietnam 56 SARS-COV-2 YES 16-07-2000
