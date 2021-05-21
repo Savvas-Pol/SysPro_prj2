@@ -105,7 +105,7 @@ void hash_monitor_delete(HashtableMonitor* ht, char* monitorName) {
 	}
 }
 
-void create_monitors(HashtableMonitor* ht_monitors, int numMonitors) {
+void create_pipes(HashtableMonitor* ht_monitors, int numMonitors) {
 
 	for (int j = 0; j < numMonitors; j++) {
 		char name[100];
@@ -115,9 +115,9 @@ void create_monitors(HashtableMonitor* ht_monitors, int numMonitors) {
 		sprintf(node->from_child_to_parent, "from_child_to_parent_%d.fifo", j);
 		sprintf(node->from_parent_to_child, "from_parent_to_child_%d.fifo", j);
 
-		printf("Monitor Node: j=%d, id=%s, %s, %s \n", j, node->monitorName, node->from_child_to_parent, node->from_parent_to_child);
+		//printf("Monitor Node: j=%d, id=%s, %s, %s \n", j, node->monitorName, node->from_child_to_parent, node->from_parent_to_child);
 
-		if (mkfifo(node->from_child_to_parent, 0600) == -1 && errno == EEXIST) {
+		if (mkfifo(node->from_child_to_parent, 0600) == -1 && errno == EEXIST) {		//create named pipes
 			unlink(node->from_child_to_parent);
 			mkfifo(node->from_child_to_parent, 0600);            
 		}

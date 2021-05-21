@@ -70,8 +70,10 @@ int check_six_months(Date* d1, Date* d2) { //returns 1 if vaccination date is wi
 	}
 
 	if(date_compare(maxDate, d2) == -1) {
+		free(maxDate);
 		return 0;
 	} else {
+		free(maxDate);
 		return 1;
 	}
 }

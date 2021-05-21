@@ -29,7 +29,7 @@ HashtableMonitorNode* hash_monitor_search_with_int(HashtableMonitor* ht, int mon
 HashtableMonitorNode* hash_monitor_insert(HashtableMonitor* ht, char* monitorName);
 void hash_monitor_delete(HashtableMonitor* ht, char* monitorName);
 
-void create_monitors(HashtableMonitor* ht_monitors, int numMonitors);
+void create_pipes(HashtableMonitor* ht_monitors, int numMonitors);
 void send_countries_to_monitors(HashtableMonitor* ht_monitors, HashtableCountryNode** table, int tablelen, int numMonitors, int bufferSize);
 void send_finishing_character(HashtableMonitor* ht_monitors, int numMonitors, int bufferSize);
 void receive_bloom_filter(HashtableMonitor* ht_monitors, HashtableVirus* ht_viruses, int numMonitors, int bloomSize, int bufferSize);

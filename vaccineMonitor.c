@@ -66,6 +66,7 @@ int vaccine_monitor_main(int argc, char** argv) {
 
 	sigaction(SIGINT, &act, NULL);
 	sigaction(SIGQUIT, &act, NULL);
+	//sigaction(SIGCHLD, &act, NULL);
 
 	act_add_records.sa_handler = catchinterrupt_act_add_records;
 	sigfillset(&(act_add_records.sa_mask));
@@ -98,7 +99,7 @@ int vaccine_monitor_main(int argc, char** argv) {
 	HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
 	HashtableCitizen* ht_citizens = hash_citizen_create(HASHTABLE_NODES); //create HashTable for citizens
 	HashtableCountry* ht_countries = hash_country_create(HASHTABLE_NODES); //create HashTable for countries
-	HashtableFilenames * ht_filenames = hash_filenames_create(HASHTABLE_NODES);
+	HashtableFilenames* ht_filenames = hash_filenames_create(HASHTABLE_NODES); //create HashTable for filenames
 
 	while (1) {
 		char * info3 = NULL;

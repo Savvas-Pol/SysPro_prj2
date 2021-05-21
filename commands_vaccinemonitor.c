@@ -214,7 +214,7 @@ void vaccine_status_id(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens
 				if (citizen != NULL) {
 					sprintf(out3, "%s YES %d-%d-%d", temp->virusName, citizen->date->day, citizen->date->month, citizen->date->year);
 
-					char * info = out3;
+					char* info = out3;
 					int info_length = strlen(info) + 1;
 					send_info(writefd, info, info_length, bufferSize);
 				}
@@ -686,7 +686,6 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 		} else {
 			while ((direntp = readdir(inputDirectory)) != NULL) {
 				if (direntp->d_name[0] != '.') {
-					printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
 
 					char * buffer5 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1 + strlen(direntp->d_name) + 1);
 					strcpy(buffer5, inputDirectoryPath);
@@ -697,8 +696,6 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 
 					if (hash_filenames_search(ht_filenames, buffer5) == NULL) {
 						FILE * citizenRecordsFile = fopen(buffer5, "r");
-
-						printf("Reading ... inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
 
 						int r;
 						char * line = NULL;
@@ -726,9 +723,6 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 
 	for (j = 0; j < tablelen2; j++) {
 		char * virus = table[j]->virusName;
-
-		printf("Sending disease :%s to parent through pipe: %s via fd: %d \n", virus, from_child_to_parent, writefd);
-
 		char * info1 = (char *) virus;
 		int info_length1 = strlen(virus) + 1;
 
@@ -743,6 +737,7 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 	char buffer[2] = "#";
 	char * info1 = (char *) buffer;
 	int info_length1 = strlen(buffer) + 1;
+
 	send_info(writefd, info1, info_length1, bufferSize);
 }
 

@@ -16,7 +16,6 @@
 #include "commands_vaccinemonitor.h"
 
 void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName, int requestID, int* totalAccepted, int* totalRejected) {
-	//printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
 
 	HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
 
@@ -93,7 +92,6 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 }
 
 void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2) {
-	//printf("Called travel_stats with: %s, %s, %s\n", virusName, date1, date2);
 
 	HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
 	int totalAccepted = 0, totalRejected = 0, j;
@@ -135,7 +133,6 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
 }
 
 void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2, char* country) {
-	//printf("Called travel_stats_country with: %s, %s, %s, %s\n", virusName, date1, date2, country);
 
 	HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
 	int totalAccepted = 0, totalRejected = 0, j;
@@ -181,7 +178,6 @@ void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_count
 }
 
 void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char* countryName) {
-	//printf("Called add_vaccination_records with: %s\n", countryName);
 
 	HashtableCountryNode* country = hash_country_search(ht_countries, countryName);
 
@@ -255,7 +251,7 @@ void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_
 
 	// SELECT
 	for (i = 0; i < tablelen; i++) {
-		while (true) {
+		while (1) {
 			receive_info(table[i]->fd_from_child_to_parent, &info, bufferSize);
 			
 			if (strcmp(info, "#") == 0) {

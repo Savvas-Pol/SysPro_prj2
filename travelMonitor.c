@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
 
 		sigaction(SIGINT, &act, NULL);
 		sigaction(SIGQUIT, &act, NULL);
+		//sigaction(SIGCHLD, &act, NULL);
 	}
 
 	HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
@@ -69,24 +70,21 @@ int main(int argc, char** argv) {
 
 	while ((direntp = readdir(inputDirectory)) != NULL) {
 		if (direntp->d_name[0] != '.') {
-			printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
-
 			HashtableCountryNode* country = hash_country_search(ht_countries, direntp->d_name);
 			if (country == NULL) {
-				hash_country_insert(ht_countries, direntp->d_name);
+				hash_country_insert(ht_countries, direntp->d_name);		//insert countries in parent's hashtable
 			}
 		}
 	}
-
 	closedir(inputDirectory);
 
 	for (j = 0; j < numMonitors; j++) {
 		char name[100];
-		sprintf(name, "%d", j);
-		hash_monitor_insert(ht_monitors, name);
+		sprintf(name, "%d", j);						//monitor names
+		hash_monitor_insert(ht_monitors, name);		//insert monitors in parent's hashtable
 	}
 
-	create_monitors(ht_monitors, numMonitors);
+	create_pipes(ht_monitors, numMonitors);
 
 	for (j = 0; j < numMonitors; j++) {
 		char name[100];
@@ -123,8 +121,6 @@ int main(int argc, char** argv) {
 			int info_length3 = strlen(inputDirectoryPath) + 1;
 
 			send_info(node->fd_from_parent_to_child, info3, info_length3, info_length3);
-
-			printf("info_length1=%d, info_length2=%d, info_length3=%d\n", info_length1, info_length2, info_length3);
 		} else if (pid == 0) { //child
 			argc = 3;
 			argv = malloc(sizeof (char*)*4);
@@ -134,39 +130,19 @@ int main(int argc, char** argv) {
 			argv[3] = NULL;
 			
 //            execvp("./vaccineMonitor", argv);
-			
 			return vaccine_monitor_main(argc, argv);
 		}
 	}
 	//only parent continues from now on
 	int tablelen;
-
 	HashtableCountryNode** table = hash_country_to_array(ht_countries, &tablelen); //convert hash table to array to sort countries
 
-	for (j = 0; j < tablelen; j++) {
-		char * country = table[j]->countryName;
-		printf(" (%d) country :%s \n", j + 1, country);
-	}
-
-	printf("----------------------------------\n");
-
 	send_countries_to_monitors(ht_monitors, table, tablelen, numMonitors, bufferSize); //send countries round robin to monitors
-
 	send_finishing_character(ht_monitors, numMonitors, bufferSize); //send finishing character "#" to all monitors
-
-	printf("----------------------------------\n");
-
 	receive_bloom_filter(ht_monitors, ht_viruses, numMonitors, bloomSize, bufferSize);
 
 	int vtablelen;
-
 	HashtableVirusNode** vtable = hash_virus_to_array(ht_viruses, &vtablelen);
-
-	for (j = 0; j < vtablelen; j++) {
-		char * virusName = vtable[j]->virusName;
-
-		printf("Parent Virus slot [%d]: %s \n", j + 1, virusName);
-	}
 
 	while (quit != 1) { //commands from user
 		size_t len = 0;
@@ -205,7 +181,6 @@ int main(int argc, char** argv) {
 					travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], requestID, &totalAccepted, &totalRejected);
 					requestID++;
 				}
-				//printf("\n\nPARENT - requestID = %d\n\n", requestID);
 			} else if (!strcmp(token, "/travelStats") || !strcmp(token, "travelStats")) {
 				char* tokens[5];
 
