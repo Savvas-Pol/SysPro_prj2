@@ -319,7 +319,7 @@ void population_status_country_dates(HashtableVirus* ht_viruses, HashtableCountr
 
 	HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
 	HashtableCountryNode* countryNode = hash_country_search(ht_countries, country);
-	int vaccinated_people = 0, total = 0, j;
+	int vaccinated_people = 0, total = 0;
 	double percentage;
 	Date* date_from = char_to_date(date1);
 	Date* date_to = char_to_date(date2);
@@ -484,7 +484,7 @@ void pop_status_by_age_country_dates(HashtableVirus* ht_viruses, HashtableCountr
 
 	HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
 	HashtableCountryNode* countryNode = hash_country_search(ht_countries, country);
-	int sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, total1 = 0, total2 = 0, total3 = 0, total4 = 0, j;
+	int sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, total1 = 0, total2 = 0, total3 = 0, total4 = 0;
 	double percentage1, percentage2, percentage3, percentage4;
 
 	Date* date_from = char_to_date(date1);

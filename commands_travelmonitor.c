@@ -94,7 +94,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2) {
 
 	HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
-	int totalAccepted = 0, totalRejected = 0, j;
+	int totalAccepted = 0, totalRejected = 0;
 
 	Date* date_from = char_to_date(date1);
 	Date* date_to = char_to_date(date2);
@@ -135,7 +135,7 @@ void travel_stats(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, Ha
 void travel_stats_country(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, char* virusName, char* date1, char* date2, char* country) {
 
 	HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName);
-	int totalAccepted = 0, totalRejected = 0, j;
+	int totalAccepted = 0, totalRejected = 0;
 
 	Date* date_from = char_to_date(date1);
 	Date* date_to = char_to_date(date2);
@@ -233,8 +233,6 @@ void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_co
 void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, int numMonitors, char* citizenID) {
 
 	int i;
-
-	char name[10] = {0};
 	int tablelen;
 	HashtableMonitorNode** table = hash_monitor_to_array(ht_monitors, &tablelen);
 
