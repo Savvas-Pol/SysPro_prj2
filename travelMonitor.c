@@ -133,6 +133,9 @@ int main(int argc, char** argv) {
             argv[1] = "-i";
             argv[2] = name;
             argv[3] = NULL;
+            
+//            execvp("./vaccineMonitor", argv);
+            
             return vaccine_monitor_main(argc, argv);
         }
     }

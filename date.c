@@ -68,7 +68,7 @@ int check_six_months(Date* d1, Date* d2) { //returns 1 if vaccination date is wi
 	} else {
 		maxDate->year = d1->year;
 	}
-	printf("VACCINATION DATE: %d-%d-%d TRAVEL DATE: %d-%d-%d MAX DATE: %d-%d-%d\n", d1->day, d1->month, d1->year, d2->day, d2->month, d2->year, maxDate->day, maxDate->month, maxDate->year);
+
 	if(date_compare(maxDate, d2) == -1) {
 		return 0;
 	} else {

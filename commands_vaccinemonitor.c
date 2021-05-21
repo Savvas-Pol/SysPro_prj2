@@ -154,20 +154,20 @@ int vaccine_status_id_virus(HashtableVirus* ht_viruses, HashtableCitizen* ht_cit
             bool vaccinated = sn1 != NULL;
 
             if (vaccinated) {
-                printf("VACCINATED ON %d-%d-%d \n", sn1->date->day, sn1->date->month, sn1->date->year);
+                //printf("VACCINATED ON %d-%d-%d \n", sn1->date->day, sn1->date->month, sn1->date->year);
 
                 Date* date_for_travel = char_to_date(travelDate);
-                
-                printf("TRAVELLING ON %d-%d-%d \n", date_for_travel->day, date_for_travel->month, date_for_travel->year);
-                if(date_compare(sn1->date, date_for_travel) == 1) {
-                    return 1;
+
+                //printf("TRAVELLING ON %d-%d-%d \n", date_for_travel->day, date_for_travel->month, date_for_travel->year);
+                if (date_compare(sn1->date, date_for_travel) == 1) {
+                    return 4;
                 }
-                if(check_six_months(sn1->date, date_for_travel) == 1) {
+                if (check_six_months(sn1->date, date_for_travel) == 1) {
                     return 0;
                 } else {
                     return 4;
                 }
-                
+
             } else {
                 printf("NOT VACCINATED \n");
                 return 1;
@@ -190,26 +190,48 @@ void vaccine_status_id(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens
     SkipListNode* citizen;
     HashtableCitizenNode* citizenNode = hash_citizen_search(ht_citizens, citizenID);
 
+    char out1[5000];
+    char out2[5000];
+    char out3[5000];
+    char out4[5000];
+
     if (citizenNode != NULL) {
-        printf("%s %s %s %s\n", citizenNode->citizen->citizenID, citizenNode->citizen->firstName, citizenNode->citizen->lastName, citizenNode->citizen->country);
-        printf("AGE %d\n", citizenNode->citizen->age);
+        sprintf(out1, "%s %s %s %s", citizenNode->citizen->citizenID, citizenNode->citizen->firstName, citizenNode->citizen->lastName, citizenNode->citizen->country);
+        sprintf(out2, "AGE %d", citizenNode->citizen->age);
+
+        char * info = out1;
+        int info_length = strlen(info) + 1;
+        send_info(writefd, info, info_length, bufferSize);
+
+        char * info2 = out2;
+        int info_length2 = strlen(info2) + 1;
+        send_info(writefd, info2, info_length2, bufferSize);
+
         for (i = 0; i < HASHTABLE_NODES; i++) {
             temp = ht_viruses->nodes[i];
             while (temp != NULL) {
                 citizen = skiplist_search(temp->vaccinated_persons, citizenID);
                 if (citizen != NULL) {
-                    printf("%s YES %d-%d-%d \n", temp->virusName, citizen->date->day, citizen->date->month, citizen->date->year);
+                    sprintf(out3, "%s YES %d-%d-%d", temp->virusName, citizen->date->day, citizen->date->month, citizen->date->year);
+
+                    char * info = out3;
+                    int info_length = strlen(info) + 1;
+                    send_info(writefd, info, info_length, bufferSize);
                 }
 
                 citizen = skiplist_search(temp->not_vaccinated_persons, citizenID);
                 if (citizen != NULL) {
-                    printf("%s NO \n", temp->virusName);
+                    sprintf(out4, "%s NO", temp->virusName);
+                    
+                    char * info = out4;
+                    int info_length = strlen(info) + 1;
+                    send_info(writefd, info, info_length, bufferSize);
                 }
                 temp = temp->next;
             }
         }
     } else {
-        printf("Citizen: %s missing\n", citizenID);
+//        printf("Citizen: %s missing\n", citizenID);
     }
 }
 
@@ -630,7 +652,7 @@ int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_ci
 
         send_info(writefd, info, info_length, bufferSize);
     }
-    
+
     if (q == 4) {
         char * info = "REQUEST REJECTED - YOU WILL NEED ANOTHER VACCINATION BEFORE TRAVEL DATE";
         int info_length = strlen(info) + 1;
@@ -642,7 +664,10 @@ int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_ci
 }
 
 void search_vaccination_status_for_child(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableCitizen* ht_citizens, int bloomSize, int bufferSize, int readfd, int writefd, char* citizenID) {
-
     vaccine_status_id(ht_viruses, ht_citizens, citizenID, bufferSize, readfd, writefd);
 
+    char * info = "#";
+    int info_length = strlen(info) + 1;
+
+    send_info(writefd, info, info_length, bufferSize);
 }

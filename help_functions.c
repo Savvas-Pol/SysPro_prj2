@@ -159,6 +159,26 @@ void free_record(Record* temp) { //free
     }
 }
 
+int write_all(int fd, void*buff, size_t size) {
+    int sent, n;
+    for (sent = 0; sent < size; sent += n) {
+        if ((n = write(fd, buff + sent, size - sent)) == -1) {
+            return-1;
+        }
+    }
+    return sent;
+}
+
+int read_all(int fd, void*buff, size_t size) {
+    int sent, n;
+    for (sent = 0; sent < size; sent += n) {
+        if ((n = read(fd, buff + sent, size - sent)) == -1) {
+            return-1;
+        }
+    }
+    return sent;
+}
+
 void send_info(int fd, char *info, int infolength, int bufferSize) {
     if (write(fd, (char*) &infolength, sizeof (infolength)) == -1) {
         if (errno == EINTR) {
@@ -175,17 +195,17 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
         int m;
 
         if (infolength - n >= bufferSize) {
-            m = write(fd, info, bufferSize);
+            m = write_all(fd, info, bufferSize);
             if (m == -1)
                 perror("Error in write!!!\n");
         } else {
-            m = write(fd, info, infolength - n);
+            m = write_all(fd, info, infolength - n);
             if (m == -1)
                 perror("Error in write!!!\n");
         }
 
-        n = n + m;          //bytes written
-        info = info + m;    //move pointer by m
+        n = n + m; //bytes written
+        info = info + m; //move pointer by m
     }
 }
 
@@ -193,7 +213,7 @@ int receive_info(int fd, char **pstart, int bufferSize) {
     int infolength;
     int n = 0;
 
-    if ((n=read(fd, (char*) &infolength, sizeof (infolength))) == -1) {
+    if ((n = read(fd, (char*) &infolength, sizeof (infolength))) == -1) {
         if (errno == EINTR) {
             return 0;
         } else {
@@ -201,11 +221,11 @@ int receive_info(int fd, char **pstart, int bufferSize) {
             exit(1);
         }
     }
-    
+
     if (n == 0) {
         exit(1);
     }
-    
+
     *pstart = malloc(infolength);
 
     n = 0;
@@ -216,11 +236,11 @@ int receive_info(int fd, char **pstart, int bufferSize) {
         int m;
 
         if (infolength - n >= bufferSize) {
-            m = read(fd, info, bufferSize);
+            m = read_all(fd, info, bufferSize);
             if (m == -1)
                 perror("Error in read!!!\n");
         } else {
-            m = read(fd, info, infolength - n);
+            m = read_all(fd, info, infolength - n);
             if (m == -1)
                 perror("Error in read!!!\n");
         }

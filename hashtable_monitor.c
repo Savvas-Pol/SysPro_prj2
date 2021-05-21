@@ -173,6 +173,7 @@ void send_finishing_character(HashtableMonitor* ht_monitors, int numMonitors, in
 
 void receive_bloom_filter(HashtableMonitor* ht_monitors, HashtableVirus* ht_viruses, int numMonitors, int bloomSize, int bufferSize) {
 
+    // SELECT
     for (int j = 0; j < numMonitors; j++) {
         char name[100];
         sprintf(name, "%d", j);

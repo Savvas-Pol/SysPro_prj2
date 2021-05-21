@@ -123,6 +123,7 @@ void execute_add_records(char * inputDirectoryPath, HashtableFilenames * ht_file
     send_info(writefd, info1, info_length1, bufferSize);
 }
 
+//int main(int argc, char** argv) {
 int vaccine_monitor_main(int argc, char** argv) {
 
     /*  ---     DECLARATIONS    --- */
