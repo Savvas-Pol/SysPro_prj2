@@ -7,135 +7,135 @@
 
 HashtableCountry* hash_country_create(int hashNodes) {
 
-    int i;
+	int i;
 
-    HashtableCountry* ht = malloc(sizeof (HashtableCountry));
-    ht->hash_nodes = hashNodes;
+	HashtableCountry* ht = malloc(sizeof (HashtableCountry));
+	ht->hash_nodes = hashNodes;
 
-    ht->nodes = (HashtableCountryNode**) malloc(hashNodes * sizeof (HashtableCountryNode*)); //create hashtable for countries
-    for (i = 0; i < hashNodes; i++) {
-        ht->nodes[i] = NULL;
-    }
+	ht->nodes = (HashtableCountryNode**) malloc(hashNodes * sizeof (HashtableCountryNode*)); //create hashtable for countries
+	for (i = 0; i < hashNodes; i++) {
+		ht->nodes[i] = NULL;
+	}
 
-    return ht;
+	return ht;
 }
 
 void hash_country_destroy(HashtableCountry* ht) {
 
-    int i;
+	int i;
 
-    for (i = 0; i < ht->hash_nodes; i++) {
-        HashtableCountryNode* temp = ht->nodes[i];
+	for (i = 0; i < ht->hash_nodes; i++) {
+		HashtableCountryNode* temp = ht->nodes[i];
 
-        while (temp != NULL) {
-            ht->nodes[i] = temp->next;
+		while (temp != NULL) {
+			ht->nodes[i] = temp->next;
 
-            free(temp->countryName);
-            free(temp);
+			free(temp->countryName);
+			free(temp);
 
-            temp = ht->nodes[i];
-        }
-    }
+			temp = ht->nodes[i];
+		}
+	}
 
-    free(ht->nodes);
-    free(ht);
+	free(ht->nodes);
+	free(ht);
 }
 
 HashtableCountryNode* hash_country_search(HashtableCountry* ht, char* countryName) {
 
-    int pos = hash_function((unsigned char*) countryName, ht->hash_nodes);
+	int pos = hash_function((unsigned char*) countryName, ht->hash_nodes);
 
-    HashtableCountryNode* temp = ht->nodes[pos];
+	HashtableCountryNode* temp = ht->nodes[pos];
 
-    while (temp != NULL) {
-        if (!strcmp(temp->countryName, countryName))
-            return temp;
+	while (temp != NULL) {
+		if (!strcmp(temp->countryName, countryName))
+			return temp;
 
-        temp = temp->next;
-    }
-    return temp;
+		temp = temp->next;
+	}
+	return temp;
 }
 
 HashtableCountryNode* hash_country_insert(HashtableCountry* ht, char* countryName) {
 
-    int pos = hash_function((unsigned char*) countryName, ht->hash_nodes);
+	int pos = hash_function((unsigned char*) countryName, ht->hash_nodes);
 
-    HashtableCountryNode* new;
+	HashtableCountryNode* new;
 
-    new = (HashtableCountryNode*) malloc(sizeof (HashtableCountryNode));
+	new = (HashtableCountryNode*) malloc(sizeof (HashtableCountryNode));
 
-    new->countryName = (char*) malloc(strlen(countryName) + 1);
-    strcpy(new->countryName, countryName);
-    new->next = ht->nodes[pos];
-    ht->nodes[pos] = new;
+	new->countryName = (char*) malloc(strlen(countryName) + 1);
+	strcpy(new->countryName, countryName);
+	new->next = ht->nodes[pos];
+	ht->nodes[pos] = new;
 
-    return new;
+	return new;
 }
 
 void hash_country_delete(HashtableCountry* ht, char* countryName) {
 
-    int pos = hash_function((unsigned char*) countryName, ht->hash_nodes);
+	int pos = hash_function((unsigned char*) countryName, ht->hash_nodes);
 
-    HashtableCountryNode* temp = ht->nodes[pos], *temp2;
-    int first = 1; // flag to check if we are in first node
+	HashtableCountryNode* temp = ht->nodes[pos], *temp2;
+	int first = 1; // flag to check if we are in first node
 
-    while (temp != NULL) {
-        if (!strcmp(temp->countryName, countryName)) {
-            if (first)
-                ht->nodes[pos] = temp->next;
-            else
-                temp2->next = temp->next;
+	while (temp != NULL) {
+		if (!strcmp(temp->countryName, countryName)) {
+			if (first)
+				ht->nodes[pos] = temp->next;
+			else
+				temp2->next = temp->next;
 
-            free(temp->countryName);
-            free(temp);
-            return;
-        }
-        temp2 = temp;
-        temp = temp->next;
-        first = 0;
-    }
+			free(temp->countryName);
+			free(temp);
+			return;
+		}
+		temp2 = temp;
+		temp = temp->next;
+		first = 0;
+	}
 }
 
 HashtableCountryNode** hash_country_to_array(HashtableCountry* ht, int* len) {
-    
-    int i, j;
-    HashtableCountryNode* temp;
+	
+	int i, j;
+	HashtableCountryNode* temp;
 
-    *len = 0;
+	*len = 0;
 
-    for (i = 0; i < ht->hash_nodes; i++) {
-        temp = ht->nodes[i];
+	for (i = 0; i < ht->hash_nodes; i++) {
+		temp = ht->nodes[i];
 
-        while (temp != NULL) {
-            (*len)++;
+		while (temp != NULL) {
+			(*len)++;
 
-            temp = temp->next;
-        }
-    }
+			temp = temp->next;
+		}
+	}
 
-    HashtableCountryNode** table = malloc(sizeof (HashtableCountryNode*)*(*len));
+	HashtableCountryNode** table = malloc(sizeof (HashtableCountryNode*)*(*len));
 
-    int counter = 0;
+	int counter = 0;
 
-    for (i = 0; i < ht->hash_nodes; i++) {
-        temp = ht->nodes[i];
+	for (i = 0; i < ht->hash_nodes; i++) {
+		temp = ht->nodes[i];
 
-        while (temp != NULL) {
-            table[counter++] = temp;
+		while (temp != NULL) {
+			table[counter++] = temp;
 
-            temp = temp->next;
-        }
-    }
-    
-     for (i = 0; i < *len - 1; i++) {               //sort array alphabetically
-        for (j = i+1; j < *len; j++) {
-            if(strcmp(table[i]->countryName,table[j]->countryName)>0){
-                temp = table[i];
-                table[i] = table[j];
-                table[j] = temp;
-            }
-        }
-     }
+			temp = temp->next;
+		}
+	}
+	
+	 for (i = 0; i < *len - 1; i++) {               //sort array alphabetically
+		for (j = i+1; j < *len; j++) {
+			if(strcmp(table[i]->countryName,table[j]->countryName)>0){
+				temp = table[i];
+				table[i] = table[j];
+				table[j] = temp;
+			}
+		}
+	 }
 
-    return table;
+	return table;
 }

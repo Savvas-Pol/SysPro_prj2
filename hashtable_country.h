@@ -7,7 +7,7 @@
 
 typedef struct HashtableCountryNode {
 	char* countryName;
-    int who;
+	int who;
 	struct HashtableCountryNode* next; //pointer to next bucket node
 } HashtableCountryNode;
 

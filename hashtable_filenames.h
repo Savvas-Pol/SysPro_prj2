@@ -7,7 +7,7 @@
 
 typedef struct HashtableFilenamesNode {
 	char* fileName;
-    int who;
+	int who;
 	struct HashtableFilenamesNode* next; //pointer to next bucket node
 } HashtableFilenamesNode;
 

@@ -82,17 +82,17 @@ Date* char_to_date(char* date) {	//converts string to Date
 
 	char tempDate[11];
 	strcpy(tempDate, date);
-    char* token = strtok(tempDate, "-");
-    int j = 0;
-    while (token != NULL) {
-        if (j == 0)
-            newDate->day = atoi(token);
-        else if (j == 1)
-            newDate->month = atoi(token);
-        else if (j == 2)
-            newDate->year = atoi(token);
-        token = strtok(NULL, "-\n");
-        j++;
-    }
-    return newDate;
+	char* token = strtok(tempDate, "-");
+	int j = 0;
+	while (token != NULL) {
+		if (j == 0)
+			newDate->day = atoi(token);
+		else if (j == 1)
+			newDate->month = atoi(token);
+		else if (j == 2)
+			newDate->year = atoi(token);
+		token = strtok(NULL, "-\n");
+		j++;
+	}
+	return newDate;
 }

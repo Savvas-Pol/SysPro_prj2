@@ -112,46 +112,46 @@ void hash_virus_delete(HashtableVirus* ht, char* virusName) {
 }
 
 HashtableVirusNode** hash_virus_to_array(HashtableVirus* ht, int* len) {
-    
-    int i, j;
-    HashtableVirusNode* temp;
+	
+	int i, j;
+	HashtableVirusNode* temp;
 
-    *len = 0;
+	*len = 0;
 
-    for (i = 0; i < ht->hash_nodes; i++) {
-        temp = ht->nodes[i];
+	for (i = 0; i < ht->hash_nodes; i++) {
+		temp = ht->nodes[i];
 
-        while (temp != NULL) {
-            (*len)++;
+		while (temp != NULL) {
+			(*len)++;
 
-            temp = temp->next;
-        }
-    }
+			temp = temp->next;
+		}
+	}
 
-    HashtableVirusNode** table = malloc(sizeof (HashtableVirusNode*)*(*len));
+	HashtableVirusNode** table = malloc(sizeof (HashtableVirusNode*)*(*len));
 
-    int counter = 0;
+	int counter = 0;
 
-    for (i = 0; i < ht->hash_nodes; i++) {
-        temp = ht->nodes[i];
+	for (i = 0; i < ht->hash_nodes; i++) {
+		temp = ht->nodes[i];
 
-        while (temp != NULL) {
-            table[counter++] = temp;
+		while (temp != NULL) {
+			table[counter++] = temp;
 
-            temp = temp->next;
-        }
-    }
-    
-     for (i = 0; i < *len - 1; i++) {				//sort array alphabetically
-     	for (j = i+1; j < *len; j++) {
-     		if(strcmp(table[i]->virusName,table[j]->virusName)>0){
-             	temp = table[i];
-             	table[i] = table[j];
-             	table[j] = temp;
-            }
-     	}
-     }
+			temp = temp->next;
+		}
+	}
+	
+	 for (i = 0; i < *len - 1; i++) {				//sort array alphabetically
+		for (j = i+1; j < *len; j++) {
+			if(strcmp(table[i]->virusName,table[j]->virusName)>0){
+				temp = table[i];
+				table[i] = table[j];
+				table[j] = temp;
+			}
+		}
+	 }
 
-    return table;
+	return table;
 }
 
