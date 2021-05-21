@@ -15,7 +15,7 @@
 #include "help_functions.h"
 #include "commands_vaccinemonitor.h"
 
-void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName, int requestID) {
+void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName, int requestID, int* totalAccepted, int* totalRejected) {
     //printf("Called travel_request with: %s, %s, %s, %s, %s\n", citizenID, date, countryFrom, countryTo, virusName);
 
     HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
@@ -37,6 +37,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 	   
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
         skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
+        (*totalRejected)++;
 
         destroy_request(request);
         return;
@@ -77,10 +78,12 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
     if (!strcmp(info, "REQUEST ACCEPTED - HAPPY TRAVELS")) {
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
         skiplist_insert(node->vaccinated_persons, request, newDate, request->citizenID);
+        (*totalAccepted)++;
         //printf("ACCEPTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
     } else {
         HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
         skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
+        (*totalRejected)++;
         //printf("REJECTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
     }
     destroy_request(request);
