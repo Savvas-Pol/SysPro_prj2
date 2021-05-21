@@ -87,6 +87,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
         //printf("REJECTED - Inserted in skiplist successfully - ID: %s on %d-%d-%d\n", request->citizenID, newDate->day, newDate->month, newDate->year);
     }
     destroy_request(request);
+    free(newDate);
     free(info);
     free(command);
 }

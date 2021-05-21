@@ -184,8 +184,8 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
                 perror("Error in write!!!\n");
         }
 
-        n = n + m;
-        info = info + m;
+        n = n + m;          //bytes written
+        info = info + m;    //move pointer by m
     }
 }
 
