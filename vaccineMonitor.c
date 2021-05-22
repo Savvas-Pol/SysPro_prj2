@@ -168,7 +168,7 @@ int vaccine_monitor_main(int argc, char** argv) {
 	for (j = 0; j < tablelen; j++) {		//sending viruses and bloom filters to father
 		char* virus = table[j]->virusName;
 
-		printf("Sending disease :%s to parent through pipe: %s via fd: %d \n", virus, from_child_to_parent, writefd);
+		printf("Child <%d>:%d - Sending disease :%s to parent through pipe: %s via fd: %d \n", id, getpid(), virus, from_child_to_parent, writefd);
 
 		char* info1 = (char *) virus;
 		int info_length1 = strlen(virus) + 1;

@@ -23,261 +23,301 @@
 #include "skiplist.h"
 
 int quit = 0;
-//int child = 0;
+int child = 0;
 
 int vaccine_monitor_main(int argc, char** argv);
 
 void catchinterrupt(int signo) {
-	printf("\nCatching: signo=%d\n", signo);
-	printf("Catching: returning\n");
+    printf("\nCatching: signo=%d (SIGINT)\n", signo);
+    printf("Catching: returning\n");
 
-	quit = 1;
+    quit = 1;
+}
+
+void catchinterrupt_respawn_child(int signo) {
+    printf("\nCatching: signo=%d (SIGCHLD) \n", signo);
+    
+    child = 1;
+}
+
+void respawn_child() {
+    pid_t p;
+        
+    while ((p=(waitpid(-1, NULL, WNOHANG))) > 0) {
+        printf("Child with PID %d died \n", p);    
+    }
 }
 
 int main(int argc, char** argv) {
 
-	/*  ---     DECLARATIONS    --- */
+    /*  ---     DECLARATIONS    --- */
 
-	int bloomSize, bufferSize, numMonitors, i, j, requestID = 0;
-	int totalAccepted = 0, totalRejected = 0;
-	char* token;
-	char *inputDirectoryPath = NULL;
+    int bloomSize, bufferSize, numMonitors, i, j, requestID = 0;
+    int totalAccepted = 0, totalRejected = 0;
+    char* token;
+    char *inputDirectoryPath = NULL;
 
-	char* line = NULL;
+    char* line = NULL;
 
-	DIR* inputDirectory;
-	struct dirent *direntp;
+    DIR* inputDirectory;
+    struct dirent *direntp;
 
-	FILE* logfile;
+    FILE* logfile;
 
-	static struct sigaction act;
+    static struct sigaction act;
+    static struct sigaction act_respawn_child;
 
-	/*      ---------------     */
+    /*      ---------------     */
 
-	if ((inputDirectory = read_arguments_for_travel_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &inputDirectoryPath)) == NULL) { //read arguments from command line
-		return -1;
-	} else {
-		act.sa_handler = catchinterrupt;
-		sigfillset(&(act.sa_mask));
+    if ((inputDirectory = read_arguments_for_travel_monitor(argc, argv, &bloomSize, &bufferSize, &numMonitors, &inputDirectoryPath)) == NULL) { //read arguments from command line
+        return -1;
+    } else {
+        act.sa_handler = catchinterrupt;
+        act_respawn_child.sa_handler = catchinterrupt_respawn_child;
+        sigfillset(&(act.sa_mask));
+        sigfillset(&(act_respawn_child.sa_mask));
 
-		sigaction(SIGINT, &act, NULL);
-		sigaction(SIGQUIT, &act, NULL);
-		//sigaction(SIGCHLD, &act, NULL);
-	}
+        sigaction(SIGINT, &act, NULL);
+        sigaction(SIGQUIT, &act, NULL);
 
-	HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
-	HashtableCountry* ht_countries = hash_country_create(HASHTABLE_NODES); //create HashTable for countries
-	HashtableMonitor* ht_monitors = hash_monitor_create(HASHTABLE_NODES); //create HashTable for monitors
+        sigaction(SIGCHLD, &act_respawn_child, NULL);
+    }
 
-	while ((direntp = readdir(inputDirectory)) != NULL) {
-		if (direntp->d_name[0] != '.') {
-			HashtableCountryNode* country = hash_country_search(ht_countries, direntp->d_name);
-			if (country == NULL) {
-				hash_country_insert(ht_countries, direntp->d_name);		//insert countries in parent's hashtable
-			}
-		}
-	}
-	closedir(inputDirectory);
+    HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
+    HashtableCountry* ht_countries = hash_country_create(HASHTABLE_NODES); //create HashTable for countries
+    HashtableMonitor* ht_monitors = hash_monitor_create(HASHTABLE_NODES); //create HashTable for monitors
 
-	for (j = 0; j < numMonitors; j++) {
-		char name[100];
-		sprintf(name, "%d", j);						//monitor names
-		hash_monitor_insert(ht_monitors, name);		//insert monitors in parent's hashtable
-	}
+    while ((direntp = readdir(inputDirectory)) != NULL) {
+        if (direntp->d_name[0] != '.') {
+            HashtableCountryNode* country = hash_country_search(ht_countries, direntp->d_name);
+            if (country == NULL) {
+                hash_country_insert(ht_countries, direntp->d_name); //insert countries in parent's hashtable
+            }
+        }
+    }
+    closedir(inputDirectory);
 
-	create_pipes(ht_monitors, numMonitors);
+    for (j = 0; j < numMonitors; j++) {
+        char name[100];
+        sprintf(name, "%d", j); //monitor names
+        hash_monitor_insert(ht_monitors, name); //insert monitors in parent's hashtable
+    }
 
-	for (j = 0; j < numMonitors; j++) {
-		char name[100];
-		sprintf(name, "%d", j);
+    create_pipes(ht_monitors, numMonitors);
 
-		HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
+    for (j = 0; j < numMonitors; j++) {
+        char name[100];
+        sprintf(name, "%d", j);
 
-		pid_t pid = fork();
+        HashtableMonitorNode* node = hash_monitor_search(ht_monitors, name);
 
-		if (pid > 0) { //parent
-			node->pid = pid;
+        pid_t pid = fork();
 
-			if ((node->fd_from_parent_to_child = open(node->from_parent_to_child, O_WRONLY)) < 0) {
-				perror("travelMonitor: can't open read fifo");
-				exit(1);
-			}
+        if (pid > 0) { //parent
+            node->pid = pid;
 
-			if ((node->fd_from_child_to_parent = open(node->from_child_to_parent, O_RDONLY)) < 0) {
-				perror("travelMonitor: can't open write fifo");
-				exit(1);
-			}
+            if ((node->fd_from_parent_to_child = open(node->from_parent_to_child, O_WRONLY)) < 0) {
+                perror("travelMonitor: can't open read fifo");
+                exit(1);
+            }
 
-			char * info1 = (char *) &bloomSize;
-			int info_length1 = sizeof (bloomSize);
+            if ((node->fd_from_child_to_parent = open(node->from_child_to_parent, O_RDONLY)) < 0) {
+                perror("travelMonitor: can't open write fifo");
+                exit(1);
+            }
 
-			send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1); //first message is bloomSize
+            char* info1 = (char *) &bloomSize;
+            int info_length1 = sizeof (bloomSize);
 
-			char * info2 = (char *) &bufferSize;
-			int info_length2 = sizeof (bufferSize);
+            send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1); //first message is bloomSize
 
-			send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2); //second message is bufferSize
+            char* info2 = (char *) &bufferSize;
+            int info_length2 = sizeof (bufferSize);
 
-			char * info3 = inputDirectoryPath;
-			int info_length3 = strlen(inputDirectoryPath) + 1;
+            send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2); //second message is bufferSize
 
-			send_info(node->fd_from_parent_to_child, info3, info_length3, info_length3);
-		} else if (pid == 0) { //child
-			argc = 3;
-			argv = malloc(sizeof (char*)*4);
-			argv[0] = "vaccineMonitor";
-			argv[1] = "-i";
-			argv[2] = name;
-			argv[3] = NULL;
-			
-			//execvp("./vaccineMonitor", argv);
-			return vaccine_monitor_main(argc, argv);
-		}
-	}
-	//only parent continues from now on
-	int tablelen;
-	HashtableCountryNode** table = hash_country_to_array(ht_countries, &tablelen); //convert hash table to array to sort countries
+            char* info3 = inputDirectoryPath;
+            int info_length3 = strlen(inputDirectoryPath) + 1;
 
-	send_countries_to_monitors(ht_monitors, table, tablelen, numMonitors, bufferSize); //send countries round robin to monitors
-	send_finishing_character(ht_monitors, numMonitors, bufferSize); //send finishing character "#" to all monitors
-	receive_bloom_filter(ht_monitors, ht_viruses, numMonitors, bloomSize, bufferSize);
+            send_info(node->fd_from_parent_to_child, info3, info_length3, info_length3);
+        } else if (pid == 0) { //child
+            argc = 3;
+            argv = malloc(sizeof (char*)*4);
+            argv[0] = "vaccineMonitor";
+            argv[1] = "-i";
+            argv[2] = name;
+            argv[3] = NULL;
 
-	int vtablelen;
-	HashtableVirusNode** vtable = hash_virus_to_array(ht_viruses, &vtablelen);
+            //execvp("./vaccineMonitor", argv);
+            return vaccine_monitor_main(argc, argv);
+        }
+    }
+    //only parent continues from now on
+    int tablelen;
+    HashtableCountryNode** table = hash_country_to_array(ht_countries, &tablelen); //convert hash table to array to sort countries
 
-	while (quit != 1) { //commands from user
-		size_t len = 0;
+    send_countries_to_monitors(ht_monitors, table, tablelen, numMonitors, bufferSize); //send countries round robin to monitors
+    send_finishing_character(ht_monitors, numMonitors, bufferSize); //send finishing character "#" to all monitors
+    receive_bloom_filter(ht_monitors, ht_viruses, numMonitors, bloomSize, bufferSize);
 
-		sigset_t set1;
-		sigemptyset(&set1);
+    int vtablelen;
+    HashtableVirusNode** vtable = hash_virus_to_array(ht_viruses, &vtablelen);
 
-		sigprocmask(SIG_SETMASK, &set1, NULL); // allow everything here!
+    while (quit != 1) { //commands from user
 
-		printf("\nGive command: ");
-		if (getline(&line, &len, stdin) == 0 || quit == 1) {
-			break;
-		}
-		token = strtok(line, " \n");
+        //RESPAWN CHILD
+        //pid = waitpid(pid, &status, WNOHANG|WUNTRACED);
+        // HashtableMonitorNode* deadChild = hash_monitor_search_with_int(ht_monitors, j);
 
-		sigaddset(&set1, SIGINT);
-		sigaddset(&set1, SIGQUIT);
-		sigaddset(&set1, SIGUSR1);
-		//sigaddset(&set1, SIGCHLD);
+        // close(deadChild->fd_from_child_to_parent);
+        // close(deadChild->fd_from_parent_to_child);
 
-		sigprocmask(SIG_SETMASK, &set1, NULL); // disallow everything here!
+        // unlink(deadChild->from_child_to_parent);
+        // unlink(deadChild->from_parent_to_child);
 
-		if (token != NULL) {
-			if (!strcmp(token, "/travelRequest") || !strcmp(token, "travelRequest")) {
-				char* tokens[6];
 
-				tokens[0] = strtok(NULL, " \n"); //citizenID
-				tokens[1] = strtok(NULL, " \n"); //date
-				tokens[2] = strtok(NULL, " \n"); //countryFrom
-				tokens[3] = strtok(NULL, " \n"); //countryTo
-				tokens[4] = strtok(NULL, " \n"); //virusName
-				tokens[5] = strtok(NULL, " \n"); //NULL
 
-				if (tokens[0] == NULL || tokens[1] == NULL || tokens[2] == NULL || tokens[3] == NULL || tokens[4] == NULL || tokens[5] != NULL) {
-					printf("syntax error\n");
-				} else {
-					travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], requestID, &totalAccepted, &totalRejected);
-					requestID++;
-				}
-			} else if (!strcmp(token, "/travelStats") || !strcmp(token, "travelStats")) {
-				char* tokens[5];
 
-				tokens[0] = strtok(NULL, " \n"); //virusName
-				tokens[1] = strtok(NULL, " \n"); //date1
-				tokens[2] = strtok(NULL, " \n"); //date2
-				tokens[3] = strtok(NULL, " \n"); //country
-				tokens[4] = strtok(NULL, " \n"); //NULL
+        size_t len = 0;
 
-				if (tokens[0] == NULL) {
-					printf("syntax error\n");
-				} else if (tokens[0] != NULL && tokens[1] != NULL && tokens[2] != NULL && tokens[3] == NULL) {
-					travel_stats(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0], tokens[1], tokens[2]);
-				} else if (tokens[0] != NULL && tokens[1] != NULL && tokens[2] != NULL && tokens[3] != NULL && tokens[4] == NULL) {
-					travel_stats_country(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0], tokens[1], tokens[2], tokens[3]);
-				} else {
-					printf("syntax error\n");
-				}
-			} else if (!strcmp(token, "/addVaccinationRecords") || !strcmp(token, "addVaccinationRecords")) {
-				char* tokens[2];
+        sigset_t set1;
+        sigemptyset(&set1);
 
-				tokens[0] = strtok(NULL, " \n"); //country
-				tokens[1] = strtok(NULL, " \n"); //NULL
+        sigprocmask(SIG_SETMASK, &set1, NULL); // allow everything here!
 
-				if (tokens[0] == NULL || tokens[1] != NULL) {
-					printf("syntax error\n");
-				} else {
-					add_vaccination_records(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0]);
-				}
-			} else if (!strcmp(token, "/searchVaccinationStatus") || !strcmp(token, "searchVaccinationStatus")) {
-				char* tokens[2];
+        printf("\nGive command: ");
+        if (getline(&line, &len, stdin) == 0 || quit == 1) {
+            break;
+        }
 
-				tokens[0] = strtok(NULL, " \n"); //citizenID
-				tokens[1] = strtok(NULL, " \n"); //NULL
+        sigaddset(&set1, SIGINT);
+        sigaddset(&set1, SIGQUIT);
+        sigaddset(&set1, SIGUSR1);
+        sigaddset(&set1, SIGCHLD);
 
-				if (tokens[0] == NULL || tokens[1] != NULL) {
-					printf("syntax error\n");
-				} else {
-					search_vaccination_status(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, numMonitors, tokens[0]);
-				}
-			} else if (!strcmp(token, "/exit") || !strcmp(token, "exit")) {
-				break;
-			} else {
-				printf("Invalid command!! Try again...\n");
-			}
-		}
-	}
+        sigprocmask(SIG_SETMASK, &set1, NULL); // disallow everything here!
 
-	char logfile_name[100];
-	sprintf(logfile_name, "log_file.%d", getpid());
-	logfile = fopen(logfile_name, "w");
-	if (logfile == NULL) {
-		printf("Error! Could not open file\n");
-		exit(-1);
-	}
-	HashtableCountryNode* temp;
-	for (i = 0; i < HASHTABLE_NODES; i++) {
-		temp = ht_countries->nodes[i];
-		while (temp != NULL) {
-			fprintf(logfile, "%s\n", temp->countryName);
-			temp = temp->next;
-		}
-	}
-	fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalAccepted + totalRejected);
-	fprintf(logfile, "ACCEPTED %d\n", totalAccepted);
-	fprintf(logfile, "REJECTED %d\n", totalRejected);
+        if (child == 1) {
+            child = 0;
+            respawn_child();
+            clearerr(stdin);
+            continue;
+        }
 
-	// frees
-	for (j = 0; j < numMonitors; j++) {
-		HashtableMonitorNode* node = hash_monitor_search_with_int(ht_monitors, j);
-		kill(node->pid, SIGKILL);
-	}
+        token = strtok(line, " \n");
 
-	if (line != NULL) {
-		free(line);
-	}
+        if (token != NULL) {
+            if (!strcmp(token, "/travelRequest") || !strcmp(token, "travelRequest")) {
+                char* tokens[6];
 
-	for (j = 0; j < numMonitors; j++) {
-		HashtableMonitorNode* node = hash_monitor_search_with_int(ht_monitors, j);
+                tokens[0] = strtok(NULL, " \n"); //citizenID
+                tokens[1] = strtok(NULL, " \n"); //date
+                tokens[2] = strtok(NULL, " \n"); //countryFrom
+                tokens[3] = strtok(NULL, " \n"); //countryTo
+                tokens[4] = strtok(NULL, " \n"); //virusName
+                tokens[5] = strtok(NULL, " \n"); //NULL
 
-		waitpid(node->pid, 0, 0);
+                if (tokens[0] == NULL || tokens[1] == NULL || tokens[2] == NULL || tokens[3] == NULL || tokens[4] == NULL || tokens[5] != NULL) {
+                    printf("syntax error\n");
+                } else {
+                    travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], requestID, &totalAccepted, &totalRejected);
+                    requestID++;
+                }
+            } else if (!strcmp(token, "/travelStats") || !strcmp(token, "travelStats")) {
+                char* tokens[5];
 
-		close(node->fd_from_child_to_parent);
-		close(node->fd_from_parent_to_child);
+                tokens[0] = strtok(NULL, " \n"); //virusName
+                tokens[1] = strtok(NULL, " \n"); //date1
+                tokens[2] = strtok(NULL, " \n"); //date2
+                tokens[3] = strtok(NULL, " \n"); //country
+                tokens[4] = strtok(NULL, " \n"); //NULL
 
-		unlink(node->from_child_to_parent);
-		unlink(node->from_parent_to_child);
-	}
+                if (tokens[0] == NULL) {
+                    printf("syntax error\n");
+                } else if (tokens[0] != NULL && tokens[1] != NULL && tokens[2] != NULL && tokens[3] == NULL) {
+                    travel_stats(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0], tokens[1], tokens[2]);
+                } else if (tokens[0] != NULL && tokens[1] != NULL && tokens[2] != NULL && tokens[3] != NULL && tokens[4] == NULL) {
+                    travel_stats_country(ht_viruses, ht_countries, ht_monitors, bloomSize, tokens[0], tokens[1], tokens[2], tokens[3]);
+                } else {
+                    printf("syntax error\n");
+                }
+            } else if (!strcmp(token, "/addVaccinationRecords") || !strcmp(token, "addVaccinationRecords")) {
+                char* tokens[2];
 
-	hash_virus_destroy(ht_viruses);
-	hash_country_destroy(ht_countries);
-	hash_monitor_destroy(ht_monitors);
+                tokens[0] = strtok(NULL, " \n"); //country
+                tokens[1] = strtok(NULL, " \n"); //NULL
 
-	free(table);
-	free(vtable);
+                if (tokens[0] == NULL || tokens[1] != NULL) {
+                    printf("syntax error\n");
+                } else {
+                    add_vaccination_records(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0]);
+                }
+            } else if (!strcmp(token, "/searchVaccinationStatus") || !strcmp(token, "searchVaccinationStatus")) {
+                char* tokens[2];
 
-	return 0;
+                tokens[0] = strtok(NULL, " \n"); //citizenID
+                tokens[1] = strtok(NULL, " \n"); //NULL
+
+                if (tokens[0] == NULL || tokens[1] != NULL) {
+                    printf("syntax error\n");
+                } else {
+                    search_vaccination_status(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, numMonitors, tokens[0]);
+                }
+            } else if (!strcmp(token, "/exit") || !strcmp(token, "exit")) {
+                break;
+            } else {
+                printf("Invalid command!! Try again...\n");
+            }
+        }
+    }
+
+    char logfile_name[100];
+    sprintf(logfile_name, "log_file.%d", getpid());
+    logfile = fopen(logfile_name, "w");
+    if (logfile == NULL) {
+        printf("Error! Could not open file\n");
+        exit(-1);
+    }
+    HashtableCountryNode* temp;
+    for (i = 0; i < HASHTABLE_NODES; i++) {
+        temp = ht_countries->nodes[i];
+        while (temp != NULL) {
+            fprintf(logfile, "%s\n", temp->countryName);
+            temp = temp->next;
+        }
+    }
+    fprintf(logfile, "TOTAL TRAVEL REQUESTS %d\n", totalAccepted + totalRejected);
+    fprintf(logfile, "ACCEPTED %d\n", totalAccepted);
+    fprintf(logfile, "REJECTED %d\n", totalRejected);
+
+    // frees
+    for (j = 0; j < numMonitors; j++) {
+        HashtableMonitorNode* node = hash_monitor_search_with_int(ht_monitors, j);
+        kill(node->pid, SIGKILL);
+    }
+
+    if (line != NULL) {
+        free(line);
+    }
+
+    for (j = 0; j < numMonitors; j++) {
+        HashtableMonitorNode* node = hash_monitor_search_with_int(ht_monitors, j);
+
+        waitpid(node->pid, 0, 0);
+
+        close(node->fd_from_child_to_parent);
+        close(node->fd_from_parent_to_child);
+
+        unlink(node->from_child_to_parent);
+        unlink(node->from_parent_to_child);
+    }
+
+    hash_virus_destroy(ht_viruses);
+    hash_country_destroy(ht_countries);
+    hash_monitor_destroy(ht_monitors);
+
+    free(table);
+    free(vtable);
+
+    return 0;
 }
