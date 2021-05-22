@@ -26,8 +26,6 @@
 int quit = 0;
 int child = 0;
 
-//int vaccine_monitor_main(int argc, char** argv);
-
 void catchinterrupt(int signo) {
 	printf("\nCatching: signo=%d (SIGINT)\n", signo);
 	printf("Catching: returning\n");
@@ -141,7 +139,6 @@ int main(int argc, char** argv) {
 			argv[3] = NULL;
 
 			execvp("./vaccineMonitor", argv);
-			//return vaccine_monitor_main(argc, argv);
 		}
 	}
 	//only parent continues from now on
