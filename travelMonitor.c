@@ -23,6 +23,7 @@
 #include "skiplist.h"
 
 int quit = 0;
+//int child = 0;
 
 int vaccine_monitor_main(int argc, char** argv);
 
@@ -161,6 +162,7 @@ int main(int argc, char** argv) {
 		sigaddset(&set1, SIGINT);
 		sigaddset(&set1, SIGQUIT);
 		sigaddset(&set1, SIGUSR1);
+		//sigaddset(&set1, SIGCHLD);
 
 		sigprocmask(SIG_SETMASK, &set1, NULL); // disallow everything here!
 
