@@ -154,4 +154,3 @@ HashtableVirusNode** hash_virus_to_array(HashtableVirus* ht, int* len) {
 
 	return table;
 }
-

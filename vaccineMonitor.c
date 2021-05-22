@@ -34,8 +34,8 @@ void catchinterrupt_act_add_records(int signo) {
 	add_records = 1;
 }
 
-//int main(int argc, char** argv) {
-int vaccine_monitor_main(int argc, char** argv) {
+int main(int argc, char** argv) {
+// int vaccine_monitor_main(int argc, char** argv) {
 
 	/*  ---     DECLARATIONS    --- */
 

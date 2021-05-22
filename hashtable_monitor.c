@@ -65,6 +65,25 @@ HashtableMonitorNode* hash_monitor_search_with_int(HashtableMonitor* ht, int mon
 	return hash_monitor_search(ht, key);
 }
 
+HashtableMonitorNode* hash_monitor_search_pid(HashtableMonitor* ht, pid_t pid) {
+	int i;
+
+	for (i = 0; i < ht->hash_nodes; i++) {
+		HashtableMonitorNode* temp = ht->nodes[i];
+
+		while (temp != NULL) {
+			//ht->nodes[i] = temp->next;
+
+			if(temp->pid == pid) {
+				return temp;
+			}
+
+			temp = temp->next;
+		}
+	}
+	return NULL;
+}
+
 HashtableMonitorNode* hash_monitor_insert(HashtableMonitor* ht, char* monitorName) {
 
 	int pos = hash_function((unsigned char*) monitorName, ht->hash_nodes);

@@ -53,7 +53,7 @@ void skiplist_destroy(SkipList* sl) { //destroy
 	free(sl);
 }
 
-SkipListNode* skiplist_search(SkipList* sl, char * id) {
+SkipListNode* skiplist_search(SkipList* sl, char* id) {
 	int i;
 	SkipListNode* l = sl->head;
 
@@ -73,7 +73,7 @@ SkipListNode* skiplist_search(SkipList* sl, char * id) {
 	return 0;
 }
 
-void skiplist_insert(SkipList* sl, Citizen * citizen, Date * date, char * id) {
+void skiplist_insert(SkipList* sl, Citizen* citizen, Date* date, char* id) {
 
 	int i, level;
 	SkipListNode * update[sl->maxLevel];
@@ -104,7 +104,7 @@ void skiplist_insert(SkipList* sl, Citizen * citizen, Date * date, char * id) {
 	}
 }
 
-void skiplist_delete(SkipList* sl, char * id) { //delete node with given id
+void skiplist_delete(SkipList* sl, char* id) { //delete node with given id
 
 	int i;
 	SkipListNode * update[sl->maxLevel];
