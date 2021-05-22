@@ -82,8 +82,7 @@ Date* char_to_date(char* date) {	//converts string to Date
 
 	Date* newDate = calloc(1, sizeof (Date));
 
-	char tempDate[11];
-	strcpy(tempDate, date);
+	char* tempDate = strdup(date);
 	char* token = strtok(tempDate, "-");
 	int j = 0;
 	while (token != NULL) {
