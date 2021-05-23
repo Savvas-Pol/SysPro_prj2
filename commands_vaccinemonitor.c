@@ -609,7 +609,7 @@ void list_nonVaccinated_Persons(HashtableVirus* ht_viruses, char* virusName) {
 	}
 }
 
-int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens, char * citizenID, char * date, char* countryFrom, char * virusName, int readfd, int writefd, int bufferSize) {
+int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_citizens, char* citizenID, char* date, char* countryFrom, char* virusName, int readfd, int writefd, int bufferSize) {
 
 	int q = vaccine_status_bloom(ht_viruses, citizenID, virusName);
 
@@ -626,35 +626,35 @@ int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_ci
 	q = vaccine_status_id_virus(ht_viruses, ht_citizens, citizenID, virusName, date);
 
 	if (q == 0) {
-		char * info = "REQUEST ACCEPTED - HAPPY TRAVELS";
+		char* info = "REQUEST ACCEPTED - HAPPY TRAVELS";
 		int info_length = strlen(info) + 1;
 
 		send_info(writefd, info, info_length, bufferSize);
 	}
 
 	if (q == 1) {
-		char * info = "REQUEST REJECTED - YOU ARE NOT VACCINATED";
+		char* info = "REQUEST REJECTED - YOU ARE NOT VACCINATED";
 		int info_length = strlen(info) + 1;
 
 		send_info(writefd, info, info_length, bufferSize);
 	}
 
 	if (q == 2) {
-		char * info = "REQUEST REJECTED - VIRUS NOT FOUND - YOU ARE NOT VACCINATED";
+		char* info = "REQUEST REJECTED - VIRUS NOT FOUND - YOU ARE NOT VACCINATED";
 		int info_length = strlen(info) + 1;
 
 		send_info(writefd, info, info_length, bufferSize);
 	}
 
 	if (q == 3) {
-		char * info = "REQUEST REJECTED - YOU DO NOT EXIST - YOU ARE NOT VACCINATED";
+		char* info = "REQUEST REJECTED - YOU DO NOT EXIST - YOU ARE NOT VACCINATED";
 		int info_length = strlen(info) + 1;
 
 		send_info(writefd, info, info_length, bufferSize);
 	}
 
 	if (q == 4) {
-		char * info = "REQUEST REJECTED - YOU WILL NEED ANOTHER VACCINATION BEFORE TRAVEL DATE";
+		char* info = "REQUEST REJECTED - YOU WILL NEED ANOTHER VACCINATION BEFORE TRAVEL DATE";
 		int info_length = strlen(info) + 1;
 
 		send_info(writefd, info, info_length, bufferSize);
@@ -663,7 +663,7 @@ int travel_request_for_child(HashtableVirus* ht_viruses, HashtableCitizen* ht_ci
 	return q;
 }
 
-void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilenames * ht_filenames, HashtableCitizen* ht_citizens, HashtableCountry* ht_countries, HashtableVirus* ht_viruses, HashtableVirusNode** table2, int tablelen2, int bloomSize, char * from_child_to_parent, int bufferSize, int readfd, int writefd) {
+void add_vaccination_records_for_child(char* inputDirectoryPath, HashtableFilenames* ht_filenames, HashtableCitizen* ht_citizens, HashtableCountry* ht_countries, HashtableVirus* ht_viruses, HashtableVirusNode** table2, int tablelen2, int bloomSize, char* from_child_to_parent, int bufferSize, int readfd, int writefd) {
 	int j;
 	DIR* inputDirectory = NULL;
 	struct dirent *direntp;
@@ -674,9 +674,9 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 	HashtableCountryNode** carray = hash_country_to_array(ht_countries, &lencountries);
 
 	for (int i = 0; i < lencountries; i++) {
-		char * buffer = carray[i]->countryName;
+		char* buffer = carray[i]->countryName;
 
-		char * buffer4 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1);
+		char* buffer4 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1);
 		strcpy(buffer4, inputDirectoryPath);
 		strcat(buffer4, "/");
 		strcat(buffer4, buffer);
@@ -687,7 +687,7 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 			while ((direntp = readdir(inputDirectory)) != NULL) {
 				if (direntp->d_name[0] != '.') {
 
-					char * buffer5 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1 + strlen(direntp->d_name) + 1);
+					char* buffer5 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1 + strlen(direntp->d_name) + 1);
 					strcpy(buffer5, inputDirectoryPath);
 					strcat(buffer5, "/");
 					strcat(buffer5, buffer);
@@ -695,10 +695,10 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 					strcat(buffer5, direntp->d_name);
 
 					if (hash_filenames_search(ht_filenames, buffer5) == NULL) {
-						FILE * citizenRecordsFile = fopen(buffer5, "r");
+						FILE* citizenRecordsFile = fopen(buffer5, "r");
 
 						int r;
-						char * line = NULL;
+						char* line = NULL;
 						size_t len;
 						while ((r = getline(&line, &len, citizenRecordsFile)) != -1) { //read file line by line
 							Record record;
@@ -722,20 +722,20 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 
 
 	for (j = 0; j < tablelen2; j++) {
-		char * virus = table[j]->virusName;
-		char * info1 = (char *) virus;
+		char* virus = table[j]->virusName;
+		char* info1 = (char*) virus;
 		int info_length1 = strlen(virus) + 1;
 
 		send_info(writefd, info1, info_length1, bufferSize);
 
-		char * info2 = table[j]->bloom->vector;
+		char* info2 = table[j]->bloom->vector;
 		int info_length2 = bloomSize;
 
 		send_info(writefd, info2, info_length2, bufferSize);
 	}
 
 	char buffer[2] = "#";
-	char * info1 = (char *) buffer;
+	char* info1 = (char*) buffer;
 	int info_length1 = strlen(buffer) + 1;
 
 	send_info(writefd, info1, info_length1, bufferSize);
@@ -744,7 +744,7 @@ void add_vaccination_records_for_child(char * inputDirectoryPath, HashtableFilen
 void search_vaccination_status_for_child(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableCitizen* ht_citizens, int bloomSize, int bufferSize, int readfd, int writefd, char* citizenID) {
 	vaccine_status_id(ht_viruses, ht_citizens, citizenID, bufferSize, readfd, writefd);
 
-	char * info = "#";
+	char* info = "#";
 	int info_length = strlen(info) + 1;
 
 	send_info(writefd, info, info_length, bufferSize);

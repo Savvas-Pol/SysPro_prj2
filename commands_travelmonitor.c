@@ -57,7 +57,7 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 
 	//printf("Sending command :%s to worker %d through pipe: %s via fd: %d \n", command, country->who, node->from_parent_to_child, node->fd_from_parent_to_child);
 
-	char * info = command;
+	char* info = command;
 	int info_length = strlen(command) + 1;
 
 	send_info(node->fd_from_parent_to_child, info, info_length, bufferSize);
@@ -198,14 +198,14 @@ void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_co
 		char * info3 = NULL;
 		receive_info(fd, &info3, bufferSize);
 
-		char * buffer = info3;
+		char* buffer = info3;
 
 		if (buffer[0] == '#') {
 			free(buffer);
 			break;
 		}
 
-		char * virusName = info3;
+		char* virusName = info3;
 
 		HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName); //search if virus exists
 		if (virusNode == NULL) {
@@ -215,7 +215,7 @@ void add_vaccination_records(HashtableVirus* ht_viruses, HashtableCountry* ht_co
 			virusNode->not_vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
 		}
 
-		char * bloomVector = NULL;
+		char* bloomVector = NULL;
 		receive_info(fd, &bloomVector, bloomSize);
 
 		for (int k = 0; k < bloomSize; k++) {
@@ -238,7 +238,7 @@ void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_
 
 	//printf("Sending command : %s to all monitors\n", command);
 
-	char * info = command;
+	char* info = command;
 	int info_length = strlen(command) + 1;
 	for (i = 0; i < tablelen; i++) {
 		send_info(table[i]->fd_from_parent_to_child, info, info_length, bufferSize);

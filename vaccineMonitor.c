@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
 	int bloomSize = -1, bufferSize = -1, numMonitors = -1, j, id;
 	int readfd, writefd;
 	char* token;
-	char *inputDirectoryPath = NULL;
+	char* inputDirectoryPath = NULL;
 
 	char* line = NULL;
 	size_t len = 0;
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 	sprintf(from_child_to_parent, "from_child_to_parent_%d.fifo", id);
 	sprintf(from_parent_to_child, "from_parent_to_child_%d.fifo", id);
 
-	printf("Child started: s:%d-b:%d-m:%d-id:%d, %s, %s\n", bloomSize, bufferSize, numMonitors, id, from_child_to_parent, from_parent_to_child);
+	//printf("Child started: s:%d-b:%d-m:%d-id:%d, %s, %s\n", bloomSize, bufferSize, numMonitors, id, from_child_to_parent, from_parent_to_child);
 
 	if ((readfd = open(from_parent_to_child, O_RDONLY)) < 0) {
 		perror("vaccineMonitor: can't open read fifo");
@@ -86,13 +86,13 @@ int main(int argc, char** argv) {
 		perror("vaccineMonitor: can't open write fifo");
 	}
 
-	printf("Child: <%d>: waiting for bloom size and buffer size ... \n", id);
+	//printf("Child: <%d>: waiting for bloom size and buffer size ... \n", id);
 
 	bloomSize = receive_int(readfd, sizeof (int));
 	bufferSize = receive_int(readfd, sizeof (int));
 	receive_info(readfd, &inputDirectoryPath, bufferSize);
 
-	printf("Child: <%d>: waiting for countries (bloom:%d, buffer:%d, dir:%s )... \n", id, bloomSize, bufferSize, inputDirectoryPath);
+	//printf("Child: <%d>: waiting for countries (bloom:%d, buffer:%d, dir:%s )... \n", id, bloomSize, bufferSize, inputDirectoryPath);
 
 	HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
 	HashtableCitizen* ht_citizens = hash_citizen_create(HASHTABLE_NODES); //create HashTable for citizens
@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
 			break;
 		}
 
-		printf("Child: <%d>: country received: %s ... \n", id, buffer);
+		//printf("Child: <%d>: country received: %s ... \n", id, buffer);
 
 		HashtableCountryNode* country = hash_country_search(ht_countries, buffer);
 		if (country == NULL) {
@@ -126,7 +126,6 @@ int main(int argc, char** argv) {
 		} else {
 			while ((direntp = readdir(inputDirectory)) != NULL) {
 				if (direntp->d_name[0] != '.') {
-					printf("inode %d of the entry %s \n", (int) direntp->d_ino, direntp->d_name);
 
 					char* buffer5 = malloc(strlen(inputDirectoryPath) + 1 + strlen(buffer) + 1 + strlen(direntp->d_name) + 1);
 					strcpy(buffer5, inputDirectoryPath);
@@ -160,16 +159,14 @@ int main(int argc, char** argv) {
 		free(buffer4);
 	}
 
-	printf("Child: <%d>: building structures ... \n", id);
-
 	int tablelen;
 	HashtableVirusNode** table = hash_virus_to_array(ht_viruses, &tablelen);
 	for (j = 0; j < tablelen; j++) {		//sending viruses and bloom filters to father
 		char* virus = table[j]->virusName;
 
-		printf("Child <%d>:%d - Sending disease :%s to parent through pipe: %s via fd: %d \n", id, getpid(), virus, from_child_to_parent, writefd);
+		//printf("Child <%d>:%d - Sending disease :%s to parent through pipe: %s via fd: %d \n", id, getpid(), virus, from_child_to_parent, writefd);
 
-		char* info1 = (char *) virus;
+		char* info1 = (char*) virus;
 		int info_length1 = strlen(virus) + 1;
 
 		send_info(writefd, info1, info_length1, bufferSize);
@@ -181,7 +178,7 @@ int main(int argc, char** argv) {
 	}
 
 	char buffer[2] = "#";			//sending finishing character to father
-	char* info1 = (char *) buffer;
+	char* info1 = (char*) buffer;
 	int info_length1 = strlen(buffer) + 1;
 	send_info(writefd, info1, info_length1, bufferSize);
 

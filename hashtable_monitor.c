@@ -151,7 +151,7 @@ void create_pipes(HashtableMonitor* ht_monitors, int numMonitors) {
 void send_countries_to_monitors(HashtableMonitor* ht_monitors, HashtableCountryNode** table, int tablelen, int numMonitors, int bufferSize) {
 
 	for (int j = 0; j < tablelen; j++) {
-		char * country = table[j]->countryName;
+		char* country = table[j]->countryName;
 		table[j]->who = j % numMonitors;        //round robin
 
 		char name[100];
@@ -161,9 +161,9 @@ void send_countries_to_monitors(HashtableMonitor* ht_monitors, HashtableCountryN
 
 		int fd = node->fd_from_parent_to_child;
 
-		printf("Sending country :%s to worker %d through pipe: %s via fd: %d \n", country, table[j]->who, node->from_parent_to_child, fd);
+		//printf("Sending country :%s to worker %d through pipe: %s via fd: %d \n", country, table[j]->who, node->from_parent_to_child, fd);
 
-		char * info1 = (char *) country;
+		char* info1 = (char*) country;
 		int info_length1 = strlen(country) + 1;
 
 		send_info(fd, info1, info_length1, bufferSize);
@@ -183,7 +183,7 @@ void send_finishing_character(HashtableMonitor* ht_monitors, int numMonitors, in
 
 		strcpy(buffer, "#");
 
-		char * info1 = (char *) buffer;
+		char* info1 = (char*) buffer;
 		int info_length1 = strlen(buffer) + 1;
 
 		send_info(fd, info1, info_length1, bufferSize);
@@ -201,17 +201,17 @@ void receive_bloom_filter(HashtableMonitor* ht_monitors, HashtableVirus* ht_viru
 		int fd = node->fd_from_child_to_parent;
 
 		while (1) {
-			char * info3 = NULL;
+			char* info3 = NULL;
 			receive_info(fd, &info3, bufferSize);
 
-			char * buffer = info3;
+			char* buffer = info3;
 
 			if (buffer[0] == '#') {
 				free(buffer);
 				break;
 			}
 
-			char * virusName = info3;
+			char* virusName = info3;
 
 			HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName); //search if virus exists
 			if (virusNode == NULL) {
@@ -221,7 +221,7 @@ void receive_bloom_filter(HashtableMonitor* ht_monitors, HashtableVirus* ht_viru
 				virusNode->not_vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
 			}
 
-			char * bloomVector = NULL;
+			char* bloomVector = NULL;
 			receive_info(fd, &bloomVector, bloomSize);
 			
 			for (int k=0;k<bloomSize;k++) {

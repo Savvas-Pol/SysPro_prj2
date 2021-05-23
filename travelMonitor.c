@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 	int bloomSize, bufferSize, numMonitors, i, j, requestID = 0;
 	int totalAccepted = 0, totalRejected = 0;
 	char* token;
-	char *inputDirectoryPath = NULL;
+	char* inputDirectoryPath = NULL;
 
 	char* line = NULL;
 
@@ -116,12 +116,12 @@ int main(int argc, char** argv) {
 				exit(1);
 			}
 
-			char* info1 = (char *) &bloomSize;
+			char* info1 = (char*) &bloomSize;
 			int info_length1 = sizeof (bloomSize);
 
 			send_info(node->fd_from_parent_to_child, info1, info_length1, info_length1); //first message is bloomSize
 
-			char* info2 = (char *) &bufferSize;
+			char* info2 = (char*) &bufferSize;
 			int info_length2 = sizeof (bufferSize);
 
 			send_info(node->fd_from_parent_to_child, info2, info_length2, info_length2); //second message is bufferSize
@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
 		token = strtok(line, " \n");
 
 		if (token != NULL) {
-			if (!strcmp(token, "/travelRequest") || !strcmp(token, "travelRequest")) {
+			if (!strcmp(token, "/travelRequest")) {
 				char* tokens[6];
 
 				tokens[0] = strtok(NULL, " \n"); //citizenID
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
 					travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], requestID, &totalAccepted, &totalRejected);
 					requestID++;
 				}
-			} else if (!strcmp(token, "/travelStats") || !strcmp(token, "travelStats")) {
+			} else if (!strcmp(token, "/travelStats")) {
 				char* tokens[5];
 
 				tokens[0] = strtok(NULL, " \n"); //virusName
@@ -216,7 +216,7 @@ int main(int argc, char** argv) {
 				} else {
 					printf("syntax error\n");
 				}
-			} else if (!strcmp(token, "/addVaccinationRecords") || !strcmp(token, "addVaccinationRecords")) {
+			} else if (!strcmp(token, "/addVaccinationRecords")) {
 				char* tokens[2];
 
 				tokens[0] = strtok(NULL, " \n"); //country
@@ -227,7 +227,7 @@ int main(int argc, char** argv) {
 				} else {
 					add_vaccination_records(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0]);
 				}
-			} else if (!strcmp(token, "/searchVaccinationStatus") || !strcmp(token, "searchVaccinationStatus")) {
+			} else if (!strcmp(token, "/searchVaccinationStatus")) {
 				char* tokens[2];
 
 				tokens[0] = strtok(NULL, " \n"); //citizenID
@@ -238,7 +238,7 @@ int main(int argc, char** argv) {
 				} else {
 					search_vaccination_status(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, numMonitors, tokens[0]);
 				}
-			} else if (!strcmp(token, "/exit") || !strcmp(token, "exit")) {
+			} else if (!strcmp(token, "/exit")) {
 				break;
 			} else {
 				printf("Invalid command!! Try again...\n");

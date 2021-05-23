@@ -27,7 +27,7 @@ if [[ $ARGC == $MAX_ARGS ]]; then	#check command line arguments
 			for i in ${countries[@]}; do 			#for each country
 				mkdir ./$2/$i; 						#create new subdirectory
 				for(( j=1; j<=$3; j++ )); do
-					touch ./$2/$i/${i}-${j}.txt;	#create numFilesPerDirectory
+					touch ./$2/$i/${i}-${j}.txt;	#create 	
 				done
 				touch ./$2/$i/${i}.txt;	#create temp file for each country's records
 			done

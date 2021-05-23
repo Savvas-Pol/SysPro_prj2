@@ -181,7 +181,7 @@ int read_all(int fd, void*buff, size_t size) {      //function from http://cgi.d
 	return sent;
 }
 
-void send_info(int fd, char *info, int infolength, int bufferSize) {
+void send_info(int fd, char* info, int infolength, int bufferSize) {
 	if (write(fd, (char*) &infolength, sizeof (infolength)) == -1) {
 		if (errno == EINTR) {
 			return;
@@ -211,7 +211,7 @@ void send_info(int fd, char *info, int infolength, int bufferSize) {
 	}
 }
 
-int receive_info(int fd, char **pstart, int bufferSize) {
+int receive_info(int fd, char** pstart, int bufferSize) {
 	int infolength;
 	int n = 0;
 
@@ -256,7 +256,7 @@ int receive_info(int fd, char **pstart, int bufferSize) {
 
 int receive_int(int fd, int buffersize) {
 
-	char * info1 = NULL;
+	char* info1 = NULL;
 	int info_length1 = buffersize;
 
 	info_length1 = receive_info(fd, &info1, info_length1);
@@ -343,7 +343,7 @@ void respawn_child(HashtableMonitor* ht_monitors, HashtableVirus* ht_viruses, in
 			int fd = node->fd_from_parent_to_child;
 			char buffer[2] = "#";
 			strcpy(buffer, "#");
-			char * info4 = (char *) buffer;
+			char* info4 = (char*) buffer;
 			int info_length4 = strlen(buffer) + 1;
 
 			send_info(fd, info4, info_length4, bufferSize);
@@ -359,7 +359,7 @@ void respawn_child(HashtableMonitor* ht_monitors, HashtableVirus* ht_viruses, in
 					break;
 				}
 
-				char * virusName = info3;
+				char* virusName = info3;
 
 				HashtableVirusNode* virusNode = hash_virus_search(ht_viruses, virusName); //search if virus exists
 				if (virusNode == NULL) {
@@ -369,7 +369,7 @@ void respawn_child(HashtableMonitor* ht_monitors, HashtableVirus* ht_viruses, in
 					virusNode->not_vaccinated_persons = skiplist_init(SKIP_LIST_MAX_LEVEL);
 				}
 
-				char * bloomVector = NULL;
+				char* bloomVector = NULL;
 				receive_info(fd, &bloomVector, bloomSize);
 				
 				for (int k=0;k<bloomSize;k++) {
@@ -389,7 +389,6 @@ void respawn_child(HashtableMonitor* ht_monitors, HashtableVirus* ht_viruses, in
 			argv[3] = NULL;
 
 			execvp("./vaccineMonitor", argv);
-			// return vaccine_monitor_main(argc, argv);
 		}
 	}
 }
