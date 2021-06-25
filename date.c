@@ -95,5 +95,6 @@ Date* char_to_date(char* date) {	//converts string to Date
 		token = strtok(NULL, "-\n");
 		j++;
 	}
+	free(tempDate);
 	return newDate;
 }

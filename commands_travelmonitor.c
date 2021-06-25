@@ -14,8 +14,9 @@
 #include "hashtable_monitor.h"
 #include "help_functions.h"
 #include "commands_vaccinemonitor.h"
+#include "hashtable_request.h"
 
-void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName, int requestID, int* totalAccepted, int* totalRejected) {
+void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, HashtableMonitor* ht_monitors, HashtableRequest* ht_requests, int bloomSize, int bufferSize, char * citizenID, char* date, char* countryFrom, char* countryTo, char* virusName, int requestID, int* totalAccepted, int* totalRejected) {
 
 	HashtableCountryNode* country = hash_country_search(ht_countries, countryFrom);
 
@@ -31,8 +32,8 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 		char newID[100];
 		sprintf(newID, "%d", requestID);
 		Citizen* request = create_request(newID, countryTo);
-
 		Date* newDate = char_to_date(date);
+		hash_request_insert(ht_requests, request, newDate);
 
 		HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
 		skiplist_insert(node->not_vaccinated_persons, request, newDate, request->citizenID);
@@ -69,9 +70,9 @@ void travel_request(HashtableVirus* ht_viruses, HashtableCountry* ht_countries, 
 	char newID[100];
 	sprintf(newID, "%d", requestID);
 	Citizen* request = create_request(newID, countryTo);
-
 	Date* newDate = char_to_date(date);
-
+	hash_request_insert(ht_requests, request, newDate);
+	
 	if (!strcmp(info, "REQUEST ACCEPTED - HAPPY TRAVELS")) {
 		HashtableVirusNode* node = hash_virus_search(ht_viruses, virusName);
 		skiplist_insert(node->vaccinated_persons, request, newDate, request->citizenID);
@@ -256,5 +257,6 @@ void search_vaccination_status(HashtableVirus* ht_viruses, HashtableCountry* ht_
 			}
 		}
 	}
+	free(table);
 	free(command);
 }

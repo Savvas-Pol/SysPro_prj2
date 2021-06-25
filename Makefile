@@ -1,8 +1,8 @@
-OBJS = travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o hashtable_filenames.o BF.o date.o commands_vaccinemonitor.o commands_travelmonitor.o citizen.o
+OBJS = travelMonitor.o vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o hashtable_filenames.o hashtable_request.o BF.o date.o commands_vaccinemonitor.o commands_travelmonitor.o citizen.o
 OUT = travelMonitor vaccineMonitor
 
-OBJSTRAVEL = travelMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o hashtable_filenames.o BF.o date.o commands_travelmonitor.o commands_vaccinemonitor.o citizen.o
-SOURCETRAVEL = travelMonitor.c help_functions.c skiplist.c hashtable_virus.c hashtable_citizen.c hashtable_country.c hashtable_monitor.c hashtable_filenames.c BF.c date.c commands_travelmonitor.c commands_vaccinemonitor.c citizen.c
+OBJSTRAVEL = travelMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o hashtable_filenames.o hashtable_request.o BF.o date.o commands_travelmonitor.o commands_vaccinemonitor.o citizen.o
+SOURCETRAVEL = travelMonitor.c help_functions.c skiplist.c hashtable_virus.c hashtable_citizen.c hashtable_country.c hashtable_monitor.c hashtable_filenames.c hashtable_request.c BF.c date.c commands_travelmonitor.c commands_vaccinemonitor.c citizen.c
 OUTTRAVEL = travelMonitor
 
 OBJSVACCINE = vaccineMonitor.o help_functions.o skiplist.o hashtable_virus.o hashtable_citizen.o hashtable_country.o hashtable_monitor.o hashtable_filenames.o BF.o date.o commands_vaccinemonitor.o citizen.o
@@ -46,6 +46,9 @@ hashtable_monitor.o: hashtable_monitor.c
 	
 hashtable_filenames.o : hashtable_filenames.c
 	$(CC) $(FLAGS) hashtable_filenames.c
+
+hashtable_request.o: hashtable_request.c
+	$(CC) $(FLAGS) hashtable_request.c
 	
 BF.o: BF.c
 	$(CC) $(FLAGS) BF.c

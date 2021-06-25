@@ -22,6 +22,7 @@
 #include "constants.h"
 #include "commands_travelmonitor.h"
 #include "skiplist.h"
+#include "hashtable_request.h"
 
 int quit = 0;
 int child = 0;
@@ -76,6 +77,7 @@ int main(int argc, char** argv) {
 	HashtableVirus* ht_viruses = hash_virus_create(HASHTABLE_NODES); //create HashTable for viruses
 	HashtableCountry* ht_countries = hash_country_create(HASHTABLE_NODES); //create HashTable for countries
 	HashtableMonitor* ht_monitors = hash_monitor_create(HASHTABLE_NODES); //create HashTable for monitors
+	HashtableRequest* ht_requests = hash_request_create(HASHTABLE_NODES); //create HashTable for requests
 
 	while ((direntp = readdir(inputDirectory)) != NULL) {
 		if (direntp->d_name[0] != '.') {
@@ -195,7 +197,7 @@ int main(int argc, char** argv) {
 				if (tokens[0] == NULL || tokens[1] == NULL || tokens[2] == NULL || tokens[3] == NULL || tokens[4] == NULL || tokens[5] != NULL) {
 					printf("syntax error\n");
 				} else {
-					travel_request(ht_viruses, ht_countries, ht_monitors, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], requestID, &totalAccepted, &totalRejected);
+					travel_request(ht_viruses, ht_countries, ht_monitors, ht_requests, bloomSize, bufferSize, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], requestID, &totalAccepted, &totalRejected);
 					requestID++;
 				}
 			} else if (!strcmp(token, "/travelStats")) {
@@ -290,9 +292,11 @@ int main(int argc, char** argv) {
 	hash_virus_destroy(ht_viruses);
 	hash_country_destroy(ht_countries);
 	hash_monitor_destroy(ht_monitors);
+	hash_request_destroy(ht_requests);
 
 	free(table);
 	free(vtable);
+	//free(argv);
 
 	return 0;
 }

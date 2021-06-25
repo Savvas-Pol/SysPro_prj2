@@ -232,7 +232,7 @@ int receive_info(int fd, char** pstart, int bufferSize) {
 
 	n = 0;
 
-	char * info = *pstart;
+	char* info = *pstart;
 
 	while (n < infolength) {
 		int m;
